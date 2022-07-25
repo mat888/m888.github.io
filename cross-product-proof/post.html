@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Mathedemo</title>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript"
+  src="http://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title> testhtml </title>
+
+<body id='bd'>
+
+<h3>
+Geometric Proof on the Equivalence of Cross Product Formulas</h3>
+
+<p id="quote">
+"...the cross product can be thought of as a measure of perpendicularity in the same way that the dot product is a measure of parallelism. Given two unit vectors, their cross product has a magnitude of 1 if the two are perpendicular and a magnitude of zero if the two are parallel." - <a href="https://en.wikipedia.org/wiki/Cross_product#Properties">Wikipedia</a>
+</p>
+
+<p>
+The cross product between two vectors is notably defined in two ways.
+<p>
+The first is as a vector orthogonal<sup><a href="#fn1" id="ref1">1</a></sup> to the two input vectors ($\vec{n}$) with a length equal to the area of the parrallelogram those input vectors outline:
+
+<img src="800px-Cross_product_parallelogram.svg.png" id="wiki-img">
+<p style="text-align:center; font-size: 12px" class="math-block">
+Credit: 
+<a href="https://en.wikipedia.org/wiki/Cross_product#/media/File:Cross_product_parallelogram.svg">
+Wikipedia
+</a>
+
+<p style="text-align:center; padding-bottom: 0px" class="math-block">
+$\vec{a} \times \vec{b} = | \vec{a} || \vec{b} | \sin{\theta} \  \vec{n}$
+
+
+<p>
+Or it is defined in the 'component form,' which is simply the direct formula for the $x$, $y$, and $z$ components.
+
+<p class="math-block">
+$\vec{a} \times \vec{b} = \langle
+    a_yb_z - a_zb_y, \ 
+    a_zb_x - a_xb_z, \ 
+    a_xb_y - a_yb_x
+\rangle$
+
+<p>
+The fact that $\vec{a} \times \vec{b} = | \vec{a} || \vec{b} | \sin{\theta} \  \vec{n}
+= \langle
+    a_yb_z - a_zb_y, \ 
+    a_zb_x - a_xb_z, \ 
+    a_xb_y - a_yb_x
+\rangle
+$
+are the same vectors is not obvious and will be proved here geometrically, requiring only basic knowledge of vector arithmetic and trigonometry.<sup><a href="#fn2" id="ref2">2</a></sup> The formula $\vec{a} \times \vec{b} = | \vec{a} || \vec{b} | \sin{\theta} \  \vec{n}$ will not be used. 
+
+<p> <!-- TODO: use SVG instead of ping and highlight relevant parts of the
+SVG when you mouse over the terms in the following paragraph -->
+
+<h2>Proof</h2>
+The following diagram uses the geometric definition of the cross product, that $\vec{a} \times \vec{b} = \vec{c}$ is a vector orthogonal to the plane defined by $\vec{a}$ and $\vec{b}$, with a length equal the area of the parallelogram those vectors define.
+
+The three core elements are:
+<ul><li>
+the parallelogram formed by vectors $\vec{a}$ and $\vec{b}$ with area $A$
+<li>
+the cross product vector, $\vec{a} \times \vec{b} = \vec{c}$, with length $A$
+<li>
+the parallelogram projected onto the xy-plane.
+</ul>
+
+<div class="diagram fst">
+<img id="diagram-img" src="cross-product-proof.png" alt="proof diagram"/>
+</div>
+
+<p>
+The angle between the z-axis and the cross product vector $\vec{c}$ is $\delta$, and $\gamma$ is the angle between the z-axis and the parallelogram formed by $\vec{a}$ and $\vec{b}$. Since the not projected parallelogam and $\vec{c}$ are orthogonal to eachother...
+
+<p class="math-block">
+$\gamma + \delta = 90^{\circ}$
+
+<p>
+The z-component of $\vec{c}$ can be found with just the knowledge of $| \vec{c}| = A$ and the angle between $\vec{c}$ and the z-axis:
+
+<p class="math-block">
+$\vec{c}_z = (\vec{a} \times \vec{b})_z = A \cos{\delta}$
+<br>
+<p>
+Up next is determining the area of the projected parallelogram:
+
+<p>
+The angle between the z-axis and the xy-plane is $90^{\circ}$. Since $\delta + \gamma = 90^{\circ}$, the angle between the parallelogram drawn from $\vec{a}$ and $\vec{b}$ and its projection on the xy-plane must be $\delta$.
+
+<p>
+Since the angle between two planes (xy-plane and parallelogram) is constant, the projected parrallelogram's area can be defined in terms of $A$ and the angle $\delta$ through the expression:
+
+<p class="math-block">
+$A_{xy} = A \cos{\delta}$
+
+<p>
+...as if the parrallelograms were the base and hypotenuse of a right triangle.
+
+<p>
+All that's left is to find the area of the projected parallelogram in terms of its components to show that the value obtained starting with the trigonmetric defition is the same as the component definition. 
+
+<h2 style="font-weight: lighter;">
+Area of Parallelogram $(A_{xy})$</h2>
+
+<div class="diagram para">
+
+<img id="diagram-img" src="parallelogram-cross-proof.png" alt="proof diagram"/>
+<!--
+<object data="parallelogram-cross-proof.svg" type="image/svg+xml"></object> -->
+
+
+
+<p class="math-block" id="para-area-latex">
+Subtract the shaded areas on the right from the left:
+<br><br>
+$A_{xy} = $<span id="m1" > $ \frac{1}{2}\vec{b}_x\vec{b}_y $ </span> $ +
+          $<span id="m2" > $ \vec{a}_x\vec{b}_y $ </span> $ +
+          $<span id="m3" > $ \frac{1}{2}\vec{a}_x\vec{a}_y $ </span> $ -
+          $<span id="m4" > $ (\frac{1}{2}\vec{a}_x\vec{a}_y $ </span> $ +
+          $<span id="m5" > $ \vec{b}_x\vec{a}_y $ </span> $ +
+          $<span id="m6" > $ \frac{1}{2}\vec{b}_x\vec{b}_y) $ </span> $
+\\ $
+$
+A_{xy} = \hspace{3.8em} \vec{a}_x\vec{b}_y \hspace{4.2em} - \hspace{4.4em} \vec{b}_x\vec{a}_y \\
+A_{xy} = \vec{a}_x\vec{b}_y - \vec{b}_x\vec{a}_y
+$
+
+</div>
+
+<p>
+So from a diagram constructed from the trigonmetric definition of a cross product, we have arrived at the component form for the z-axis through basic, but nuanced, geometry. To obtain the $x$ and $y$ components, the exact same proof can be performed by projecting the parrallelogram onto each of the two other planes ($xz$, $zy$), and again equating that projection to the length of the third component. 
+
+<p>
+One caveat that was glossed over was the fact the area of a parallelogram is always positive, but there is nothing stopping any component in the resultant vector from being negative.
+
+<p>
+The trigonmetric definition is the source of this ambiguity. It defines a vector $\vec{n}$ only by the attribute that it is orthogonal to $\vec{a}$ and $\vec{b}$, without specifying in which direction. The direction is is determined by the orientation of the coordinate system. More on that can be read at <a href="https://en.wikipedia.org/wiki/Cross_product#Direction">Wikipedia</a>.
+
+<h2>Afterword</h2>
+<p>
+Credit for this proof goes to <a href="https://www.youtube.com/user/kmhock">kmhock</a>'s video <a href="https://www.youtube.com/watch?v=cXKDJ7_rmyM">here</a>. Both of these definitions of the cross product are fundamental, and many basic vector problems are solved by interchanging them, but every proof I could find online up until this one required more advanced concepts in linear algebra than the cross product itself.
+
+<p>
+It is my view that students should have accessible proofs available. Not only does this proof require a bare minimum of prerequisites, but it is also short and relativly intuitive; one can see how someone with one definition might discover the other.
+
+<p>
+One cannot build a ground up understanding by relying on advanced techniques to prove basic concepts; to understand a peice of math is to understand how that peice was discovered.
+
+<h3 style="font-weight: lighter;">Footnotes</h3>
+
+<div class="footnotes">
+<p>
+<a href="#ref1" id="fn1">[1]</a> Orthogonal, perpendicular, normal,  crosswise, transvere, right-angled, etc. 
+<p>
+ <a href="#ref2" id="fn2">[2]</a> Requiring no more than what would be taught up to being <i>told</i> of this equivalence in a typical university course. It is not typical to initially prove this equivalence.
+</div>
+
+</body>
+</html>
+
+<style>
+
+html {
+    background-color: #c5bbbb;
+}
+
+body {
+    font-size: 18px;
+    font-family: "Latin Modern";
+    //font-family: "Noto";
+    margin: 10px;
+    margin-left: 30px;
+    max-width: 800px;
+    
+    background-color: #eeeeee;
+    border: solid #666666 5px;
+    border-radius: 10px;
+    padding: 30px;
+    }
+
+#quote {
+    border: solid 2px;
+    border-radius: 7px;
+    background-color: lightgrey;
+    padding: 4px;
+}
+
+#wiki-img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%
+}
+
+.diagram {
+    width: 100%;
+    max-width: 800px;
+    //background-color: green;
+    }
+    
+.diagram.fst {
+    padding-top: 30px;
+    padding-bottom: 30px;
+    }
+    
+svg {
+    width: 100%;
+    height: 100%;
+    max-width:800px;
+}
+
+#diagram-img {
+    //height: 10px;
+    width: 100%;
+    }
+
+.math-block {
+    font-size: min(3vw, 24px);
+}
+
+.diagram.para:hover #m1 {
+    color: #ec0013aa;
+    }
+.diagram.para:hover #m2 {
+    color: #5e91f4aa;
+    }
+.diagram.para:hover #m3 {
+    color: #5ef4caaa;
+    }
+.diagram.para:hover #m4 {    
+    //color: #edf228fa;
+    color: #abb117ff;
+    }
+.diagram.para:hover #m5 {
+    color: #00f521fa;
+    //color: #abfeb1ff;
+    }
+.diagram.para:hover #m6 {
+    color: #f97affaa;
+    }
+    /*
+    color:#dae6fd;
+    color:#dafdf3;
+    color:#fbfcce;
+    color:#defee2;
+    color:#ffeeff;
+    */
+
+
+/*
+#path7172:hover{
+    fill:#000000 !important;
+    fill-opacity:0.22821577 !important;
+    stroke:yellow  !important;
+    stroke-width:0.72360384px  !important;
+    stroke-linecap:butt  !important;
+    stroke-linejoin:miter  !important;
+    stroke-opacity:1  !important;
+}
+
+#path7174:hover{
+    fill:#000000 !important;
+    fill-opacity:0.22821577 !important;
+    stroke:yellow  !important;
+    stroke-width:0.72360384px  !important;
+    stroke-linecap:butt  !important;
+    stroke-linejoin:miter  !important;
+    stroke-opacity:1  !important;}
+
+#path7176:hover{
+    fill:#000000 !important;
+    fill-opacity:0.22821577 !important;
+    stroke:yellow  !important;
+    stroke-width:0.72360384px  !important;
+    stroke-linecap:butt  !important;
+    stroke-linejoin:miter  !important;
+    stroke-opacity:1  !important;}
+  */  
+</style>
+
+<script>
+var arrow = "&#8407;"
+
+function letters(){
+    for (let i = 0; i < 26; i++){
+        begin = "<br><p><i>";
+        end   = "</i></p>";
+        s = (String.fromCharCode(i + 97)).concat(arrow);
+        s = begin.concat(s).concat(end);
+        addBody(s);
+    }
+}
+function addBody(e){
+    document.getElementById('bd').innerHTML += e
+}
+
+});
+
+</script>
+
+
+<!-- Scratch/Trash
+$\vec{a} \times \vec{b} = $
+
+<math>
+|
+<mover accent="true">
+  <mrow>
+    <mo>   <i>a</i>   </mo></mrow>  <mo> &#8594;</mo> </mover>
+||
+<mover accent="true">
+  <mrow><mo>   <i>b</i>   </mo></mrow>  <mo> &#8594;</mo> </mover>
+|
+sin &theta;
+</math>
+
+math {
+    font-size: 10px;
+    //font-family: "Times New Roman";
+    font-family: "Latin Modern";
+    font-style: normal;
+}
+-->
