@@ -56,9 +56,6 @@ The fact that $\vec{a} \times \vec{b} = | \vec{a} || \vec{b} | \sin{\theta} \  \
 $
 are the same vectors is not obvious and will be proved here geometrically, requiring only basic knowledge of vector arithmetic and trigonometry.<sup><a href="#fn2" id="ref2">2</a></sup> The formula $\vec{a} \times \vec{b} = | \vec{a} || \vec{b} | \sin{\theta} \  \vec{n}$ will not be used. 
 
-<p> <!-- TODO: use SVG instead of ping and highlight relevant parts of the
-SVG when you mouse over the terms in the following paragraph -->
-
 <h2>Proof</h2>
 The following diagram uses the geometric definition of the cross product, that $\vec{a} \times \vec{b} = \vec{c}$ is a vector orthogonal to the plane defined by $\vec{a}$ and $\vec{b}$, with a length equal the area of the parallelogram those vectors define.
 
@@ -134,7 +131,7 @@ $
 </div>
 
 <p>
-So from a diagram constructed from the trigonmetric definition of a cross product, we have arrived at the component form for the z-axis through basic, but nuanced, geometry. To obtain the $x$ and $y$ components, the exact same proof can be performed by projecting the parrallelogram onto each of the two other planes ($xz$, $zy$), and again equating that projection to the length of the third component. 
+So from a diagram constructed from the trigonmetric definition of a cross product, we have arrived at the component form for the z-axis through clever, yet basic geometry. To obtain the $x$ and $y$ components, the exact same proof can be performed by projecting the parrallelogram onto each of the two other planes ($xz$, $zy$), and again equating that projection to the length of the third component. 
 
 <p>
 One caveat that was glossed over was the fact the area of a parallelogram is always positive, but there is nothing stopping any component in the resultant vector from being negative.
@@ -144,7 +141,7 @@ The trigonmetric definition is the source of this ambiguity. It defines a vector
 
 <h2>Afterword</h2>
 <p>
-Credit for this proof goes to <a href="https://www.youtube.com/user/kmhock">kmhock</a>'s video <a href="https://www.youtube.com/watch?v=cXKDJ7_rmyM">here</a>. Both of these definitions of the cross product are fundamental, and many basic vector problems are solved by interchanging them, but every proof I could find online up until this one required more advanced concepts in linear algebra than the cross product itself.
+I discovered this proof through <a href="https://www.youtube.com/user/kmhock">kmhock</a>'s video <a href="https://www.youtube.com/watch?v=cXKDJ7_rmyM">here</a>. Both of these definitions of the cross product are fundamental, and many basic vector problems are solved by interchanging them, but every proof I could find online up until this one required more advanced concepts in linear algebra than the cross product itself.
 
 <p>
 It is my view that students should have accessible proofs available. Not only does this proof require a bare minimum of prerequisites, but it is also short and relativly intuitive; one can see how someone with one definition might discover the other.
@@ -164,6 +161,11 @@ One cannot build a ground up understanding by relying on advanced techniques to 
 <h4 style="font-weight: lighter; padding-top: 20px">
 Contact: <a href="mailto: mattwilson888@gmail.com"> mattwilson888@gmail.com </a>
 <h4>
+
+<p style="font-weight: lighter">
+My original notes:
+<img id="og-notes" src="original-notes.jpg">
+
 
 </body>
 </html>
@@ -249,6 +251,13 @@ svg {
 .diagram.para:hover #m6 {
     color: #eb0010aa;
     }
+    
+#og-notes {
+    margin-top: 15px;
+    max-width:800px;
+    border: solid white 0px;
+    border-radius: 10px;
+}
     /*
     color:#dae6fd;
     color:#dafdf3;
