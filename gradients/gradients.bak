@@ -6,7 +6,7 @@ Add pop up and down menu
 Allow the four colors to be set to preset common web themes. Before being rotated. 
 
 -->
-<title>Colors in R3</title>
+<title>testhtml</title>
 <div class="left"></div>
 <div class="right"></div>
 
@@ -31,7 +31,6 @@ Allow the four colors to be set to preset common web themes. Before being rotate
     --color3: rgb(50, 50, 150);
     --color4: rgb(150, 150, 50);
 }
-
 
 .left, .right {
     position: fixed;
@@ -123,7 +122,7 @@ function get_rgb(str) {
 
 function set_rgb(name, value) {
     str = 'rgb('.concat(String(value[0]), ',', String(value[1]), ',', String(value[2]), ')');
-    //str = str.replaceAll('-','');
+    str = str.replaceAll('-','');
     r.style.setProperty(name, str);
 }
 
@@ -230,33 +229,15 @@ function rotate_rgb(rgb, ang, axis, css_var) {
 // One wholesome solution is to only allow colors in the sphere - 
 // - they can be rotated arbitrarily without exiting the space.
 
-// Magnitude of vectors with 1, 2, and 3 components
-// of length 125:
-
-// 125
-// 176.776
-// 216.5056
-
-// When a vector with a magnitude over 125 is rotated to be
-// near paralell to an axis, the component of that axis will be
-// maxxed out even before and after the vector is paralell.
-// This represents an arc of rotation which has a static color
-// component.
-
-// The following vectors have a magnitude of 125:
-// [125, 0, 0]
-// [88.388347648, 88.388347648, 0]
-// [72.168783649, 72.168783649, 72.168783649]
-
 // Another solution is to allow the full cube, but accept that
-// only 90 degree rotations keep all colors within the space.
+// only 90 degree rotations keep allcolors within the space.
 
 
-//starting VECTOR  reference value
-const const_r_color1 = [-125, 0  , 0  ]//.map(function(x) {return x - 125})
-const const_r_color2 = [0  , -125, 0  ]//.map(function(x) {return x - 125})
-const const_r_color3 = [0  , 0  , -125]//.map(function(x) {return x - 125})
-const const_r_color4 = [72 , 72 , 72 ]//.map(function(x) {return x - 125})
+//starting reference value
+const const_r_color1 = [150,50  ,50  ].map(function(x) {return x - 125})
+const const_r_color2 = [50  ,150,50  ].map(function(x) {return x - 125})
+const const_r_color3 = [50  ,50  ,150].map(function(x) {return x - 125})
+const const_r_color4 = [150,150,50  ].map(function(x) {return x - 125})
 
 //stateful values
 var r_color1 = const_r_color1
@@ -320,7 +301,7 @@ function slider_rotateLoop() {
     if (! rotateLoop_pause) {
       slider_rotateLoop();
     }                     
-  }, 50)
+  }, 30)
 }
 slider_rotateLoop()
 
