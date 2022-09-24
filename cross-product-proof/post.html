@@ -24,8 +24,8 @@
 </div>
 
 
-<h3>
-Geometric Proof on the Equivalence of Cross Product Formulas</h3>
+<h2 id="title">
+Simple Geometric Proof on the Equivalence of Cross Product Formulas</h2>
 
 <p id="quote">
 "...the cross product can be thought of as a measure of perpendicularity in the same way that the dot product is a measure of parallelism. Given two unit vectors, their cross product has a magnitude of 1 if the two are perpendicular and a magnitude of zero if the two are parallel." - <a href="https://en.wikipedia.org/wiki/Cross_product#Properties">Wikipedia</a>
@@ -65,7 +65,9 @@ The fact that $\vec{a} \times \vec{b} = | \vec{a} || \vec{b} | \sin{\theta} \  \
     a_xb_y - a_yb_x
 \rangle
 $
-are the same vectors is not obvious and will be proved here geometrically, requiring only basic knowledge of vector arithmetic and trigonometry.<sup><a href="#fn2" id="ref2">2</a></sup> The formula $\vec{a} \times \vec{b} = | \vec{a} || \vec{b} | \sin{\theta} \  \vec{n}$ will not be used. 
+are the same vectors is not obvious and will be proved here geometrically, requiring only basic knowledge of vector arithmetic and trigonometry.<sup><a href="#fn2" id="ref2">2</a></sup>
+
+The formula $\vec{a} \times \vec{b} = | \vec{a} || \vec{b} | \sin{\theta} \  \vec{n}$ will not be explicitly used, but the geometric relationship between the cross-product vector and paralellogram will be. 
 
 <h2>Proof</h2>
 The following diagram uses the geometric definition of the cross product, that $\vec{a} \times \vec{b} = \vec{c}$ is a vector orthogonal to the plane defined by $\vec{a}$ and $\vec{b}$, with a length equal the area of the parallelogram those vectors define.
@@ -84,7 +86,9 @@ the parallelogram projected onto the xy-plane.
 </div>
 
 <p>
-The angle between the z-axis and the cross product vector $\vec{c}$ is $\delta$, and $\gamma$ is the angle between the z-axis and the parallelogram formed by $\vec{a}$ and $\vec{b}$. Since the not projected parallelogam and $\vec{c}$ are orthogonal to eachother...
+The angle between the z-axis and the cross product vector $\vec{c}$ is $\delta$, and $\gamma$ is the angle between the z-axis and the parallelogram formed by $\vec{a}$ and $\vec{b}$.
+
+By the trigonmetric definition of the cross product, the angle between the parallelogram and $\vec{c}$ is $90^{\circ}$, so the sum of these two angles is also $90^{\circ}$.
 
 <p class="math-block">
 $\gamma + \delta = 90^{\circ}$
@@ -96,15 +100,7 @@ The z-component of $\vec{c}$ can be found with just the knowledge of $| \vec{c}|
 $\vec{c}_z = (\vec{a} \times \vec{b})_z = A \cos{\delta}$
 <br>
 <p>
-Up next is determining the area of the projected parallelogram:
-
-<p>
-By the trigonmetric definition of the cross product, the angle between the parallelogram and $\vec{c}$ is $90^{\circ}$.
-<p>
-Note that $\delta + \gamma = 90^{\circ}$, and the angle between the z-axis and xy-plane must also be $90^{\circ}$.
-
-<p>
-Since the parallelogram is already $\gamma$ degrees rotated between the z-axis and xy-plane, and $\delta + \gamma \ = 90^{\circ}$, then the angle between the paralellogram and its projection onto the xy-plane is $\delta$.
+The angle between the primary paralellogram and the xy-plane will be used to calculate the area of the projection. That angle plus $\gamma$ equals $90^{\circ}$, since $\gamma + \delta = 90^{\circ}$, that angle is $\delta$.
 
 <p>
 Since the angle between two planes (xy-plane and parallelogram) is constant, the projected parrallelogram's area can be defined in terms of $A$ and the angle $\delta$, as if the parrallelograms were the base and hypotenuse of a right triangle - a basic trigonmetric formula, but generalized to all the similar triangles lined up between each paralellogram:
@@ -113,13 +109,16 @@ Since the angle between two planes (xy-plane and parallelogram) is constant, the
 $A_{xy} = A \cos{\delta}$
 
 <p>
-The z-component of the cross product is equal to the area of the parallelogam projected onto the xy-plane:
+So it is shown that the z-component of the cross product is equal to the area of the parallelogam projected onto the xy-plane:
 
 <p class="math-block">
 $\vec{c}_z = (\vec{a} \times \vec{b})_z = A \cos{\delta} = A_{xy}$
 
 <p>
-All that's left is to find the area of the projected parallelogram in terms of its $x$ and $y$ components, and see if it matches up  with the component definitions formula for it's z-component:
+This formula for the z-component comes from the trigonmetric properties of the cross-product, and is equal to the parrallelogram projected onto the xy-plane.
+
+<p>
+By deriving again the formula for this projected parrallelogram, but this time in terms of its $x$ and $y$ components (keeping in mind this area was just proven to be equal to the $z$ component of the cross product), the $z$ component can be expressed in terms of the $x$ and $y$ components of vectors $\vec{a}$ and $\vec{b}$.
 
 <h2 style="font-weight: lighter;">
 Area of Parallelogram $(A_{xy})$</h2>
@@ -151,18 +150,23 @@ $
 </div>
 
 <p>
-So from a diagram constructed from the trigonmetric definition of a cross product, we have arrived at the component form for the z-axis through clever, yet basic geometry. To obtain the $x$ and $y$ components, the exact same proof can be performed by projecting the parrallelogram onto each of the two other planes ($xz$, $zy$), and again equating that projection to the length of the remaining third component. 
+The trignometric definition was used to show that the magnitude of one component of a cross product is equal to the paralellogram formed by the two vectors projected onto the other two components. Then the area of that projected paralellogram is calculated in terms of those components, giving the two forms for the same value.
 
 <p>
-One caveat that was glossed over was the fact the area of a parallelogram is always positive, but there is nothing stopping any component in the resultant vector from being negative.
-
-<p>
-The trigonmetric definition is the source of this ambiguity. It defines a vector $\vec{n}$ only by the attribute that it is orthogonal to $\vec{a}$ and $\vec{b}$, without specifying in which direction. The direction is is determined by the orientation of the coordinate system. More on that can be read at <a href="https://en.wikipedia.org/wiki/Cross_product#Direction">Wikipedia</a>.
+This proof only demonstrated the process for one component. To obtain the $x$ and $y$ components, the exact same proof can be performed by projecting the parrallelogram onto each of the two other planes ($xz$, $zy$), and again equating that projection to the length of the remaining third component. 
 
 <h2>Afterword</h2>
 <p>
-I discovered this proof through <a href="https://www.youtube.com/user/kmhock">kmhock</a>'s video <a href="https://www.youtube.com/watch?v=cXKDJ7_rmyM">here</a>. Both of these definitions of the cross product are fundamental, and many basic vector problems are solved by interchanging them, but every proof I could find online up until this one required more advanced concepts in linear algebra than the cross product itself.
+One caveat is that there is nothing stopping any component in the resultant vector from being negative despite there being no negative areas to corrospond in the projected parrallelogram.
 
+<p>
+The resolution is to understand that the areas corrospond to the <i>magnitudes</i> of the resultant vector's components, and the direction of the cross product (which can be parralell to $\vec{a}$ and $\vec{b}$ and have the corrosponding magnitudes going both forward or in reverse) is simply defined according to the coordinate system's directionality. More on that can be read at <a href="https://en.wikipedia.org/wiki/Cross_product#Direction">Wikipedia</a>.
+
+<h3> Loose Credit </h3>
+<p>
+I discovered this proof through <a href="https://www.youtube.com/user/kmhock">kmhock</a>'s video <a href="https://www.youtube.com/watch?v=cXKDJ7_rmyM">here</a>. Both of these definitions of the cross product are fundamental, and many basic vector problems are solved by interchanging them, but every proof I could find online up until this one required more advanced concepts in linear algebra than the cross product itself. I am not sure where he learned this proof or if he came up with, but without him I would not have found it at all.
+
+<h3> Motivation </h3>
 <p>
 It is my view that students should have accessible proofs available. Not only does this proof require a bare minimum of prerequisites, but it is also short and relativly intuitive; one can see how someone with one definition might discover the other.
 
@@ -255,6 +259,10 @@ body {
     padding: 10px;
     padding-bottom: 0px;
     }
+
+#title {
+    text-align: center;
+}
 
 #quote {
     border: solid 2px;
