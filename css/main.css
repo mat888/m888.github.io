@@ -1,0 +1,12 @@
+body {
+    //background-color: #181a1b;
+    
+    max-width: 900px;
+    //margin-left: auto;
+    margin-right: auto;
+    padding: 8px;
+}
+
+p {
+   //text-indent: 20px;
+}
