@@ -124,6 +124,8 @@
 
 
 <script>
+
+// default settings
 default_config = {
     "+attack":      ["MOUSE1", 'bind MOUSE1 "+attack"'],
     "+zoom":        ["MOUSE2", 'bind MOUSE2 "+zoom"'],
@@ -155,11 +157,17 @@ default_config = {
 }
 
 // {setting: [value, command]}
-var menu_gameConfig = {}
+// this object represents current user settings
+var menu_gameConfig = {...default_config}
 
-function fill_preset(gameConfig) {
+function fill_preset(game_config) {
+    // for every setting in config JSON
     for (const [key, value] of Object.entries(gameConfig)) {
-        menu_gameConfig = {...gameConfig};
+    
+        // update the current config object
+        menu_gameConfig = {...game_config};
+        
+        // update the HTML to reflect current settings
         var elem = document.getElementById(key)
         if (elem.tagName == "TR") {
             elem.children[1].innerHTML = value[0];
@@ -169,6 +177,9 @@ function fill_preset(gameConfig) {
         }
     }
 }
+
+// initialize the menu with default settings
+// this sets menu
 fill_preset(default_config);
 
 
