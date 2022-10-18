@@ -1,0 +1,228 @@
+<html>
+<body>
+    <div id="controls">
+    <table oncontextmenu="return false">
+        <tr id="+attack">
+            <td onclick="setMyKeyDownListener('+attack')">Attack</td>
+            <td> </td>
+        <tr id="+zoom">
+            <td onclick="setMyKeyDownListener('+zoom')">Zoom</td>
+            <td> </td>
+            
+        <tr class="blank_row">
+            <td colspan="3"></td>
+        </tr>
+
+        <tr id="+forward">
+            <td onclick="setMyKeyDownListener('+forward')">Move Forward</td>
+            <td> </td>
+        <tr id="+back">
+            <td onclick="setMyKeyDownListener('+back')">Move Backward</td>
+            <td> </td>
+        <tr id="+moveleft">
+            <td onclick="setMyKeyDownListener('+moveleft')">Move Left</td>
+            <td> </td>
+        <tr id="+moveright">
+            <td onclick="setMyKeyDownListener('+moveright')">Move Right</td>
+            <td> </td>
+        <tr id="+moveup">
+            <td onclick="setMyKeyDownListener('+moveup')">Jump</td>
+            <td> </td>
+        <tr id="+speed">
+            <td onclick="setMyKeyDownListener('+speed')">Walk</td>
+            <td> </td>
+        <tr id="+movedown">
+            <td onclick="setMyKeyDownListener('+movedown')">Crouch</td>
+            <td> </td>
+                        
+        <tr class="blank_row">
+            <td colspan="3"></td>
+        </tr>
+
+        <tr id="weapnext">
+            <td onclick="setMyKeyDownListener('weapnext')">Next Weapon </td>
+            <td> </td>
+        <tr id="weapprev">
+            <td onclick="setMyKeyDownListener('weapprev')">Previous Weapon </td>
+            <td> </td>
+        <tr id="weapon 1">
+            <td onclick="setMyKeyDownListener('weapon 1')">Gauntlet (melee) </td>
+            <td> </td>
+        <tr id="weapon 2">
+            <td onclick="setMyKeyDownListener('weapon 2')">Machine Gun</td>
+            <td> </td>
+        <tr id="weapon 3">
+            <td onclick="setMyKeyDownListener('weapon 3')">Super Shotgun</td>
+            <td> </td>
+        <tr id="weapon 4">
+            <td onclick="setMyKeyDownListener('weapon 4')">Grenade Launcher</td>
+            <td> </td>
+        <tr id="weapon 5">
+            <td onclick="setMyKeyDownListener('weapon 5')">Rocket Launcher</td>
+            <td> </td>
+        <tr id="weapon 6">
+            <td onclick="setMyKeyDownListener('weapon 6')">Lightning Gun</td>
+            <td> </td>
+        <tr id="weapon 7">
+            <td onclick="setMyKeyDownListener('weapon 7')">Railgun</td>
+            <td> </td>
+        <tr id="weapon 8">
+            <td onclick="setMyKeyDownListener('weapon 8')">Plasma Gun</td>
+            <td> </td>
+        <tr id="weapon 9">
+            <td onclick="setMyKeyDownListener('weapon 9')">BFG</td>
+            <td> </td>
+                        
+        <tr class="blank_row">
+            <td colspan="3"></td>
+        </tr>
+
+        <tr id="messagemode">
+            <td onclick="setMyKeyDownListener('messagemode')">Game Chat</td>
+            <td> </td>
+        <tr id="messagemode2">
+            <td onclick="setMyKeyDownListener('messagemode2')">Team Chat</td>
+            <td> </td>
+        <tr id="+scores">
+            <td onclick="setMyKeyDownListener('+scores')">Scoreboard</td>
+            <td> </td>
+        <tr id="togglemenu">
+            <td onclick="setMyKeyDownListener('togglemenu')">Game Menu</td>
+            <td> </td>
+        <tr id="screenshot">
+            <td onclick="setMyKeyDownListener('screenshot')">Screenshot (in-game)</td>
+            <td> </td>
+        </tr>
+    </table>
+    </div>
+</body>
+</html>
+
+<style>
+
+.blank_row {
+    height: 10px !important; /* overwrites any other rules */
+    background-color: #FFFFFF;
+    }
+
+</style>
+
+
+<script>
+
+// {setting: [value, command]}
+current_config = {}
+
+window.onbeforeunload = function() { return "Leave the page?"; };
+
+var current_setting = "";
+
+function setMyKeyDownListener(setting) {
+    
+    current_setting = setting
+
+    // keyboard buttons
+    window.addEventListener("keydown", handleKey);
+    
+    // mouse buttons    
+    window.addEventListener('mousedown', handleMouse);
+    
+    // scroll wheel
+    window.addEventListener('wheel', handleWheel);
+}
+
+function handleKey(event) {
+    return handleInput(event.key);
+}
+
+function handleMouse(event) {
+    return handleInput(event.button);
+}
+
+function handleWheel(event) {
+    scroll = (-5) * Math.sign(event.deltaY);
+    return handleInput(scroll);
+}
+
+function handleInput(input) {
+    q3_bind = toQuakeBind(input);
+    
+    // remove event listeners
+    window.removeEventListener("keydown", handleKey);
+    window.removeEventListener("mousedown", handleMouse);
+    window.removeEventListener('wheel', handleWheel);
+    
+    // full
+    q3_bindCommand = 'bind ' + q3_bind + ' "' + current_setting + '"';
+    
+    // update JSON game config
+    // {setting: [value, command]}
+    current_config[current_setting] = [q3_bind, q3_bindCommand];
+    
+    // update HTML table to reflect current settings
+    document.getElementById(current_setting).children[1].innerHTML = q3_bind
+    
+    
+    console.log(current_config)
+    console.log(q3_bindCommand);
+    return q3_bindCommand;
+}
+
+function toQuakeBind(input) {
+    // return a mouse button
+    if (typeof(input) == 'number') {
+        switch(input) {
+            case 0:
+                return "MOUSE1"
+            case 2:
+                return "MOUSE2"
+            case 1:
+                return "MOUSE3"
+            case 4:
+                return "MOUSE4"
+            case 3:
+                return "MOUSE5"
+            case 5:
+                return "MWHEELUP"
+            case -5:
+                return "MWHEELDOWN"
+        }
+    }
+    else if (input == " ") {
+        return "SPACE"
+    }
+    // just return the key
+    else if (input.length == 1) {
+        return input;
+    }
+    // return special keys
+    else if (input.length > 1) {
+        switch(input) {
+            case "Shift":
+                return "SHIFT"
+            case "Control":
+                return "CTRL"
+            case "Alt":
+                return "ALT"
+            case "Backspace":
+                return "BACKSPACE"
+            case "ArrowUp":
+                return "UPARROW"
+            case "ArrowDown":
+                return "DOWNARROW"
+            case "ArrowLeft":
+                return "LEFTARROW"
+            case "ArrowRight":
+                return "RIGHTARROW"
+            case "Tab":
+                return "TAB"
+            case "Escape":
+                return "ESCAPE"
+            case "Enter":
+                return "ENTER"
+            default: return "bad input";
+        }
+    }
+}
+
+</script>
