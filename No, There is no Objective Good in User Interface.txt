@@ -1,0 +1,26 @@
+No, There is no Objective Good in User Interface
+
+There are many an unspoken truth in software, and so many a writer's gig to exhortate on the wives' tales enforced onto programmers by each other:
+	[permitting the once forbidden global variable,
+	 rebellion against corporate style OOP,
+	 ]
+
+	And many more examples I am too young to have a versed history on...
+
+But an ever important sibling domain to programming where this skepticism has not developed is in User Interface, which is quickly becoming a practice outwardly justified by a disingenuous adherence to the universal truths of UI - in reality, some styles of user interface were good enough, and came attached to what was successful at the time; those styles became copied and now are primarily used because they have been automated.
+
+I am not saying there are not UI principles and practices which are time-tested, proven, ubiquitous and beautiful, there certainly are! But the field of design is less mature than the field of programming, and they haven't yet had their renaissance about open-ended systems having many legitimate ways to skin a pig. None of this on the surface bothers me, but it is when systematic thinkers start hearing some venture capitalist preach about a new 'right way' to do something not realizing the relationships between other's financial interests and their own beliefs.
+
+Amazing how you can get programmers to bark like a dog, but how depressing that one of the more creative sides of software can become so neurotic and lazy! This is the gross side of capitalism, where gains can be achieved privately at a cost to society; Tribalism our match, engagement optimization the blowtorch. Because you know who else is wired and desperate for the assurance rigid structure seems to have: high stakes gamblers. The venture capitalists don't understand code, but ui is universally understood - don't even try and fuck around with their money by getting cute; that's the message.
+
+Does this apply to you bedroom coders? What if by some strange logical extrapolation, you fucking around in the safety of your own home could let you screw with venture capital? The good news with being late is that GPT can get you up to speed about three times faster than you could have previously, and the barren wasteland is thirsty for something different.
+
+This essay is directed at those in a powerful position; a position with freedom. Do not fall for the myths of objective truths in UI - they are tempting because you are already above average in neuroticism by virtue of having success as a software engineer, and because they make something which is not fun, easy. But ui is not fun, and it is not easy either - it is lazy. UI is not fun because the popular ways of doing it are lazy. It is our interface to the digital species, and diplomacy is better left unautomated.
+
+Afterword:
+
+What sparked me to make this video was being stuck with a pedestrian user interface on my mobile device - I don't want flames and dragons - it is pedestrian because it assumes I am tech illiterate, as most UIs do these days. I swiped down my screen to open a dashboard of toggles, down again to expand it the buttons (and hide notifs), swiped to the second page (because I can't scroll up that page, since scrolling up shrinks the expanded array of buttons), held down sleep mode, got a menu with a settings button, and took that button to a specific place in settings to edit sleep mode. I was not so secretly put into my settings app, and I had one other unrelated setting to change; pressing back enough times put me back at the home screen.
+
+Navigating a touch screen is already slow enough - a poor user interface is somewhat unacceptable, but asking less: if the UI just assumed I was decently smart about computers, it wouldn't fear letting me customize in ways that might ruin coherency, it wouldn't mind just opening the settings app, it would have more context dependent actions I could learn so I don't need to go ten layers deep into menus - this is surely what the voice assistance is aiming to ameliorate, but it's still no excuse. This philosophy of treating users like idiots and making UIs with zero learning curve and therefore zero streamlines for advanced users, again, justified by overly systematic thinking.
+
+I had to include this afterword because I am a Marijuana American, and had something deeper to say before complaining.
