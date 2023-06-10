@@ -1,0 +1,178 @@
+<head>
+	<link rel=stylesheet type="text/css" href=style.css>
+</head>
+
+<html>
+
+<h1>
+Ranking System for Competition Without an Authorized Third Party
+</h1>
+
+<h2>
+Abstract
+</h2>
+
+<p>
+Healthy competition in sports and gaming relies on a trustworthy and reliable matchmaking and ranking system to both socially reward skilled competitors and arrange the most fair matches possible.
+
+Competitions past a certain size requires some authorized third party responsible for intermediating disputes; a naive ranking system without faith in all participants to faithfully report their losses degenerates to one requiring faith in a third party to judge winners and losers.
+
+The goal of this outline is to describe a system which can reliably handle disputes without central coordination through a basic public reputation system.
+
+<h2>
+Basics
+</h2>
+
+<p>
+The system is designed to be as light as possible while making only the most important data universally public i.e. on blockchain. It makes some trade-offs to achieve simplicity by relying on faith in honest conduct to an extent - since cheating is a constant arms-race and not a one-off problem waiting to be solved, it does not make much sense to make trade-offs reducing faith in honest conduct far past the point where the incentive to cheat already exists - judgement on cheating can be determined on a per-match basis and rely more on social consensus to label suspected cheaters and update ranks; cheating is considered out-of-scope for this system.
+
+<p>
+The basic protocol entails a pre-match commitment from all parties and a post-match report by at least one party.
+
+It is necessary to first publish match commitments on-chain to prevent a situation in which one party receives a signed commitment but does not reciprocate, giving them the privilege to report an outcome while the other party has no power to dispute.
+
+Two parties agree to competition by composing and publishing a transaction with both their signatures and an agreement to conduct a match (parameters of which can also be specified in the commitment). When the match concludes, either player can report the winner as a new signed transaction - if no disputes exist within a certain number of blocks all clients on the network which track rank will cement that result.
+
+<!--
+The two parties set up a pre-match commitment via a P2P atomic swap: Player A signs a message containing her opponent's public key, a match-index or timestamp (such as the most recent block index for an agreed upon ledger), and the hash of a secret that only Player B knows. Player B then sends back a similar message, but with the secret content in plaintext. Player A signs that plaintext and sends it back, Player B signs it and sends it back...
+-->
+
+<p>
+The significant issues and trade-offs come from post-game report inconsistency - a dispute. A dispute like this can be effectively abused to deny rightful wins from the opponent and arbitrarily protect a malicious party from receiving a loss; without a third party these disputes must typically result in a draw. Since all clients participating in a league already track match results, a secondary scheme tracking <i>disputes</i> can be used to deter abuse of the system by attaching <i>trust ratings</i> to public keys based on their dispute history.
+
+<h2>
+Trust Rating
+</h2>
+
+<p>
+At the most fundamental level, a trust rating is an inverse score on the amount of disputes a player is involved in. Any player who consistently misreports their losses will quickly accrue a low trust rating and deter players with acceptable trust ratings from engaging in normal match commitments with them.
+
+<p>
+This need not necessarily exclude anyone from competing against an opponent with a higher trust - the pre-match commitment can include a parameter which modifies the respective loss in trust rating in case of a dispute such that the player with higher trust rating is subject to lose less than the lower trust; this can be done automatically based on an algorithm or be agreed upon by the players.
+
+The amount of trust rating a player agrees to lose in the case of a dispute is the <i>trust rating stake</i> for that player for that match.
+
+<p>
+In addition to a custom trust rating stake, players may also agree on a custom <i>skill rating stake</i> which determines how skill rating will be effected in any outcome (including a dispute, if so desired).
+
+This has an added benefit of allowing low stakes matches to be played which decrease the negative externalities of a dispute and can be used as a second lever with the trust rating stake for savvy matchmakers to best protect themselves as well as better gauge their skill differentials to achieve fairer rating adjustments, decreasing the desire to dispute.
+
+<p>
+The arithmetic of the chronic abuser of disputes is not in their favor:
+
+A player could protect their rating by disputing a match, but they could not gain any wins doing so, preventing them from skillessly ascending ranks without a similar and growing decrease in their trust rating as they are forced to dispute more  losses as they reach tougher competition.
+
+The glaring issue is the negative effect a dispute has on honest winners: not only does it deny them a victory, it also lowers their trust rating as a result - there is no way for an honest winner to punish a malicious reporter or protect them from handing over an unearned win without themselves taking some loss in trust rating.
+
+<p>
+The only recourse for players abused in this way it to avoid re-matching that opponent without more favorable commitment parameters related to trust rating; unfortunately, a player who targets another player is able to abuse them at least one time, but as soon as the abusive player attempts to dispute against a new honest player, they will find themselves with a lower trust rating than either honest player involved with them.
+
+The malicious players must either cease their abuse of the system or continue being a nuisance and continually descend in trust rating while any honest player who suffered a dispute from them, but refused to play again, would only suffer a single dispute on record.
+
+<h3>
+	Social Attacks
+</h3>
+
+<p>
+The system is not well equipped to identify social attacks; these are instances where one player is identified and targeted by <i>many</i> otherwise decently honest players who all dispute against the victim.
+
+In this scenario, a large group of attackers can suffer a minor decline in their trust rating but impose a large loss in rating towards their target.
+
+<p>
+The only viable solution to a social attack is a social adjustment: if it becomes clear that a competitor is being targeted and their trust rating suffers unjustly as a result, then honest third parties must <i>manually</i> adjust their perception of the victim's trust rating in defiance of the system.
+
+This social hard fork is likely the only simple solution to this inherent weakness - but considering healthy competition already relies on assumptions of fair play which are similarly exploitable, this attack doesn't increase faith required past a point where it wasn't already.
+
+<h3>
+Developing Trust Rating
+</h3>
+
+<p>
+New accounts will necessarily be of lower trust status than established ones, since a malicious party may create multiple unique accounts to target and attack established players and their trust ratings by disputing matches with them from said accounts.
+
+Honest, new accounts require methods to raise their trust rating.
+
+<p>
+The most basic solution is that fresh accounts essentially be required to play amongst each other in order to build their trust rating.
+
+It would likely be impossible to play among such fresh accounts where the inherent penalty for malicious behavior is low without being involved in numerous disputes - the ranked experience would be poor here; it would essentially be more of a casual league until an individual's trust rating is developed - the trust rating calculation for new accounts should take into account an expectation of disputes accruing to honest players.
+
+<p>
+Age of account and <i>relative</i> trust rating compared to similarly aged or played accounts should hold more weight for these bottom feeders than an absolute scoring of disputes over time.
+
+Using the last X matches to judge rating rather than a complete history will reward a player climbing out of lower trust ratings by neglecting the necessarily tumultuous earlier periods where disputes are more likely to happen to honest players; ultimately it is the opponents' discretion which scoring method(s) they wish to judge by and how much trust and skill rating they are willing to stake in pre-match commitments.
+
+<p>
+Another valid strategy for low trust-rating accounts is for small communities with high interpersonal faith to behave honestly and limit their ranked play between each other until it rises.
+
+As those players establish a high trust-rating between each other, they can convince players on the edge of that community to commit to matches with them and slowly branch out until they may reliably engage in honest matchmaking and reporting with fully anonymous participants holding a high trust rating.
+
+<h4>
+Token-Staked Trust
+</h4>
+
+<p>
+New accounts might "skip the line" in developing some trust by staking some amount of native blockchain assets to their match account for some amount of time.
+
+These staked assets will be locked for a certain amount of blocks - no slashing logic should be applied as it would encourage malicious agents to hold those assets hostage with the threat of disputes.
+
+Instead these staked assets are a pure anti-spam mechanism; the more that is staked, and the longer it is locked up, the less that the true owner of that account is able to produce other accounts of similar reputation.
+
+<p>
+The owner of that account will have strong incentives to avoid disputes since they have financially committed themselves to it - the money is still theirs, but not spendable for the length they chose.
+
+Players with this financial commitment should avoid equal deals on trust-stakes with accounts having not much to lose by carrying through on threats to add disputes to the token-staked account.
+
+This associated risk is exactly what allows them to match them with higher trust rating accounts, as both have something substantial to lose by participating in a dispute; money talks.
+
+<h2>
+Supporting Skill and Trust Rating Infrastructure
+</h2>
+
+<p>
+<i>Assuming a finite length (scalable) blockchain, one may prove data existed in the past via Merkle Branches and the historical header hashes from pruned blocks, but they may not prove that they have a complete record of certain data without holding the entire block(s).</i>
+
+<p>
+Any node wishing to accurately track skill and trust ratings will be required to monitor the blockchain for all related pre-match commitments and results reporting.
+
+For a highly popular game, like Chess, or a minimally funded community under a DoS attack, the computational power required to track and calculate all valid entries may exceed what a normal client software is capable of or wishes to be burdened by.
+
+<!--This would cause remaining nodes tracking the information to condense and centralize, allowing censorship or modification of results, and in the worst case, a halt in tracking altogether.-->
+
+<p>
+Funding can be handled through the use of a blockchain whose consensus pays nodes in exchange for user transaction fees - nodes which accurately track on-chain commitment and result transactions to determine skill and trust rating would naturally attract the transaction volume which funds their infrastructure.
+
+While the nodes which offer the best user experience will garner the most revenue, nodes which may otherwise be unprofitable in the face of a DoS attack may be protected if the entire community agrees to certain parameters.
+
+<p>
+A simple deterrent against DoS attacks is to require some amount of the same token-staked trust which contributed to initial trust ratings for any account wishing to be tracked.
+
+A higher threshold for more protection, and a lower one for greater inclusivity.
+
+Nodes which adopt different tolerances would end up out of sync, but they could still at least accurately report the agreements and events even if their final rating calculations differ.
+
+<p>
+Users' client software can track, at a minimum, their match history and regularly compare it against the nodes tracking the entire state; if a mistake is made or data is wrongfully removed or mis-tracked related to a client, that client can use their historical data to point fill in missing data or correct wrong calculations in a report.
+
+That report can be posted to the blockchain such that the public can verify the mistake, adjust their beliefs and hold the node(s) tracking the global state accountable in some fashion; these report transactions may also have tokens staked to confer integrity and prevent clients from spamming faulty reports.
+
+<p>
+In any case where consensus on ratings becomes intolerably out of sync or lost, individuals who tracked their own interactions may verifiably recollect them in order re-tally the ratings based on the sum of the data all interested parties saved and republished.
+
+<h2>
+Conclusion
+</h2>
+For all competition there exists some reliance on honesty and sportsmanship to prevent cheating and allow for accurate reporting of results.
+
+Matches which do not generate large audience become especially reliant on institutions to determine outcomes and prevent disputes about those outcomes, either in the form of in-person referees or third-party venues (like online game servers) which can report and collect results.
+
+<p>
+
+Using a rating trust-rating system tallying and punishing disputes honest players can, on average, rise above those attempting to use disputes to lie about match outcomes. 
+
+Players who lack full faith in each other may then participate in a competitive ranking system which rewards honest behavior without a central intermediator based; this system has applications for P2P online, in person, or any competition in which players may agree beforehand to participate in.
+
+<p>
+As the system allows competition where no centrally funded venue is required, it has important ramifications for open-source, community based games which may not generate the revenue typically required for such systems but are valued by their participants; by deploying atop The Saito Blockchain, which efficiently rewards nodes for network traffic, nodes can compete for profit by providing access to the boons of faith minimization which blockchain provides.
+
+This eliminates the economic inefficiencies of free-riding by users and disallows monopolization by venues, ultimately reducing the price for consumers to access such a system and increasing their power within it.

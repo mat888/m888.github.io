@@ -8,23 +8,54 @@ Add pop up and down menu
 Allow the four colors to be set to preset common web themes. Before being rotated. 
 
 -->
-<title>Colors in R3</title>
+<head>
+<title>R3 Gradients</title>
+<!--
+
+-->
+</head>
+<body>
+<div class="test" id="test"></div>
 <div class="left"></div>
 <div class="right"></div>
 
 <div class="bottom">
-<input type="range" class="axis_slider" id="slider_x" value="0" min="0" max="629">
-<input type="range" class="axis_slider" id="slider_y" value="0" min="0" max="629">
-<input type="range" class="axis_slider" id="slider_z" value="0" min="0" max="629">
+<!--
+<button type="button" id="expand_button" onclick="expand_menu()"> ^ </button>
+<br>
+-->
 
+<div class="sliders">
+<input type="range" class="axis_slider" id="slider_x" value="0" min="0" max="629" step="0.001">
+<br>
+<input type="range" class="axis_slider" id="slider_y" value="0" min="0" max="629" step="0.001">
+<br>
+<input type="range" class="axis_slider" id="slider_z" value="0" min="0" max="629" step="0.001">
+</div>
+
+<div class="buttons">
 <button type="button"
         id="auto-rotate"
         onclick="rotateLoop_control()"
         >
-        Auto Rotate
+        
 </button>
-
 </div>
+
+<div class="colors">
+<input type="color" class="color_picker" id="color3" value="">
+<input type="color" class="color_picker" id="color1" value="">
+<input type="color" class="color_picker" id="color4" value="">
+<input type="color" class="color_picker" id="color2" value="">
+</div>
+
+</div <!--class="bottom"-->>
+
+
+</body>
+<script type="text/javascript"
+  src="gradients-refactor.js">
+</script>
 
 <style>
 
@@ -33,6 +64,17 @@ Allow the four colors to be set to preset common web themes. Before being rotate
     --color2: rgb(50, 150, 50);
     --color3: rgb(50, 50, 150);
     --color4: rgb(150, 150, 50);
+    
+    --range-bg: rgba(255, 255, 255, 0.5);
+    --range-bg: rgb(20.05435%, 20%, 20%);
+    --range-thumb: green;
+    
+    /*
+    --color1: color(prophoto-rgb 60% 0% 0%);
+    --color2: color(prophoto-rgb 0% 60% 0%);
+    --color3: color(prophoto-rgb 0% 0% 60%);
+    --color4: color(prophoto-rgb 60% 60% 0%)
+    */
 }
 
 
@@ -42,12 +84,15 @@ Allow the four colors to be set to preset common web themes. Before being rotate
     left: 0;
     
     width: 100%;
-    height: calc(100% - 100px);
     height: 100%;
+    /*height: calc(100% - 100px);*/
 }
 .left {
     background: linear-gradient(var(--color1), var(--color2));
     -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,0), rgba(0,0,0,1) 100%);
+    -webkit-mask-image: linear-gradient(90deg,
+    									color(prophoto-rgb 0% 0% 0% / 0),
+    									color(prophoto-rgb 0% 0% 0% / 1) 100%);
     -webkit-mask-size: 100% 100%;
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-position: left top;
@@ -55,331 +100,221 @@ Allow the four colors to be set to preset common web themes. Before being rotate
 }
 
 .right {
-
     background: linear-gradient(var(--color3) 0%, var(--color4));
     z-index: 0;
 }
 
 .bottom {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	
     position: fixed;
     left: 0;
     bottom: 0;
     
+    z-index: 10;
+    
     width: 100%;
-    height: 30px;
-    background-color: grey;
-    opacity: 100%;
+    //height: 40px;
+    padding-top: 5px;
+    background-image: linear-gradient(to top,  rgba(10, 10, 10, 0.5), rgba(10, 10, 10, 0));
+    opacity: 0%;
     
     z-index: 2;
     
-    padding-left: 10px;
+    transition: opacity 0.4s ease-out;
 }
 
-.axis_slider {
+.bottom:hover {
+	opacity: 100%;	
+}
+
+.bottom:active {
+	opacity: 100%;
+}
+
+.active {
+	opacity: 100%;
+}
+
+.buttons, .sliders, .colors{
+	margin: auto 5px;
+}
+
+.sliders {
+	
+}
+
+/*
+TODO
+
+Replace <p> color values with actual color swtichers.
+	How to handle if more than four colors?
+	Worth handling in this app?
+	Probably not -
+
+Check out experimental "reduce other colors if one rotates outside
+valid rgb space" - so if one value exceeds valid space all others are
+reduced (in magnitude) so their relative strengths are constant. 
+
+Export as GIF for animated wallpaper/screensaver
+
+*/
+
+.colors {
+	background: linear-gradient(rgba(200, 200, 200, 0.8), rgba(220, 220, 220, 0.6));
+	height: 90px;
+	width: 90px;
+	
+	/*
+	margin-bottom: 2px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	*/
+	
+	padding: 0px;
+	
+	border-radius: 4px;
+	overflow: scroll;
+}
+
+/*
+input[type=color] {
+	height: 40px;
+	width: 40px;
+	padding: 0;
+	margin: 0px;
+	border: none;
+	outline: none;
+}
+*/
+.color_picker {
+	height: 40px;
+	width: 40px;
+	padding: 0;
+	//margin: 0px;
+	margin-right: -4px;
+	margin-top: -4px;
+	transform: translate(4px, 10px);
+	border: none;
+	outline: none;
+}
+
+#expand_button {
+	background-color: linear-gradient(rbga(255, 255, 255, 0.8), rbga(255, 255, 255, 0.5));
+	border: none;
+	border-radius: 4px;
+	text-align: center;
+	margin: 0 auto;
+}
+
+.axis_slider___deprecated {
     width: 200px;
+    background: grey;
 }
 
-button {
-    position: absolute;
-    bottom: 4px;
-    
-    background-color: white;; /* Green */
-    color: white;
-    text-align: center;
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  width: 15rem;
+}
+
+                        /***** Track Styles *****/
+/***** Chrome, Safari, Opera, and Edge Chromium *****/
+input[type="range"]::-webkit-slider-runnable-track {
+	background: var(--range-bg);
+	border-radius: 10px;
+}
+
+/***** Thumb Styles *****/
+/***** Chrome, Safari, Opera, and Edge Chromium *****/
+input[type="range"]::-webkit-slider-thumb {
+   -webkit-appearance: none; /* Override default look */
+   appearance: none;
+   //margin-top: -12px; /* Centers thumb on the track */
+   background-color: #ffffff;
+   height: 1rem;
+   width: 1rem;
+   border-radius: 10px;  
+}
+
+/******** Firefox ********/ 
+input[type="range"]::-moz-range-track {
+  background: var(--range-bg);
+}
+/* Button */
+#auto-rotate {
+    //position: absolute;
+    //bottom: 4px;
+
+	transform: translate(0px, 1px);    
+    width: 60px;
+    height: 20px;
+    background: linear-gradient(25deg, white, rgb(200, 200, 200));
     color: black;
+    color: rgba(0, 0, 0, 0);
+    text-align: center;
+    border: none;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
 }
 
-</style>
-
-<script>
-
-// Get the root element
-var r = document.querySelector(':root');
-
-// A function for getting a css root variable value
-function get_var(name) {
-  // Get the styles (properties and values) for the root
-  var rs = getComputedStyle(r);
-  value = rs.getPropertyValue(name);
-  return value;
+#auto-rotate:hover {
+    //position: absolute;
+    //bottom: 4px;
+    
+    width: 60px;
+    height: 20px;
+    background: linear-gradient(25deg, grey, rgb(200, 200, 200));
+    color: black;
+    color: rgba(0, 0, 0, 0);
+    text-align: center;
+    border: none;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
 }
 
-// A function for setting a css root variable value
-function set_var(name, value) {
-  // Set the value of variable "name" to "value"
-  r.style.setProperty(name, value);
+#auto-rotate:active {
+    //position: absolute;
+    //bottom: 4px;
+    
+    width: 60px;
+    height: 20px;
+    background: linear-gradient(25deg, grey, rgb(200, 200, 200));
+    color: black;
+    color: rgba(0, 0, 0, 0);
+    text-align: center;
+    border: none;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
 }
 
-function get_rgb(str) {
-    color = get_var(str);
-
-    cleaned  = color.slice(4, -1);
-    spaceless = cleaned.replaceAll(' ','');
-    
-    split    = spaceless.split(',');
-    intArr   = []
-    for (i=0; i<3; i++) {
-        intArr.push(parseInt(split[i]));
-        }
-    return intArr;
+.test {
+	//display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 3;
+		
+	/*
+	background-image:linear-gradient(red 25%, 75%, blue);
+	background-image:linear-gradient(red, blue 100%);
+	
+	background-image:linear-gradient(color(display-p3 1 0 0), color(display-p3 0 1 1));
+	background-image:linear-gradient(rgb(255, 0, 0), rgb(0, 255, 255));
+	background-image:linear-gradient(color(prophoto-rgb 100% 0% 0%), color(prophoto-rgb 0% 100% 100%));
+	background-image:linear-gradient(color(a98-rgb 1 0 0 / 100%), color(a98-rgb 0 1 1 / 100%));
+	background-image: linear-gradient(hsla(360, 100%, 50%, 1), hsla(118, 100%, 50%, 1));
+	*/
+	
+	//background-image: linear-gradient(rgb(255, 0, 0), rgb(0, 255, 0));
+	//background-image: linear-gradient(rgb(255, 0, 0), rgb(127, 127, 0), rgb(0, 255, 0));
+	background-image: linear-gradient(rgb(255, 0, 0) 49%, rgb(0, 255, 0) 49%);
+	background: grey;
+	
 }
-
-function set_rgb(name, value) {
-    str = 'rgb('.concat(String(value[0]), ',', String(value[1]), ',', String(value[2]), ')');
-    //str = str.replaceAll('-','');
-    r.style.setProperty(name, str);
-}
-
-function inc_rgb(rgb, inc=1) {
-    for (i=0; i<3; i++) {
-    
-        if(Math.random() > 0.5) {continue}
-    
-        c = rgb[i];
-        if (Math.abs(c) == 0) {
-            c   = 0;
-        }
-        else if (Math.abs(c) >= 250) {
-            c   = -250
-        }
-
-        rgb[i] = c + inc;
-    }
-    return rgb;
-}
-
-/*
-var color1 = get_rgb("--color1");
-var color2 = get_rgb("--color2");
-var color3 = get_rgb("--color3");
-var color4 = get_rgb("--color4");
-
-var color1 = [250,0,0];
-var color2 = [0,250,0];
-var color3 = [0,0,250];
-var color4 = [250,250,0];
-
-var counter = 0;
-function incLoop() {
-  
-  setTimeout(function() {
-    counter++;             
-    
-    color1 = inc_rgb(color1,1);
-    set_rgb("--color1", color1);
-    
-    color2 = inc_rgb(color2,1);
-    set_rgb("--color2", color2);
-    
-    color3 = inc_rgb(color3,1);
-    set_rgb("--color3", color3);
-    
-    color4 = inc_rgb(color4);
-    set_rgb("--color4", color4);
-    
-    if (counter < 5000000) {
-      incLoop();
-    }                     
-  }, 499)
-}
-*/
-/*
-
-[ a  b  c ] [ x ]   [ ax + by + cz ]
-| d  e  f | | y | = | dx + ey + fz |
-[ g  h  i ] [ z ]   [ gx + hy + iz ]
-
-*/
-
-function rotate3_x(triple, ang) {
-    x = triple[0]
-    y = triple[1]
-    z = triple[2]
-    return [x,
-            y*Math.cos(ang) - z*Math.sin(ang),
-            y*Math.sin(ang) + z*Math.cos(ang)]
-}
-
-function rotate3_y(triple, ang) {
-    x = triple[0]
-    y = triple[1]
-    z = triple[2]
-    return [x*Math.cos(ang)   + z*Math.sin(ang),
-            y,
-            - x*Math.sin(ang) + z*Math.cos(ang)]
-}
-
-function rotate3_z(triple, ang) {
-    x = triple[0]
-    y = triple[1]
-    z = triple[2]
-    return [x*Math.cos(ang) - y*Math.sin(ang),
-            x*Math.sin(ang) + y*Math.cos(ang),
-            z]
-}
-
-function rotate_rgb(rgb, ang, axis, css_var) {
-    rgb = axis(rgb, ang);
-    int_rgb = rgb.map(Math.round);
-    
-    // experimental:
-    // when a component exits valid rgb range
-    // shrink all components until they are in range
-    /*
-    if ( (max = Math.max(int_rgb)) > 127) {over = max - 127};
-    if ( (min = Math.min(int_rgb)) < 0 )  {under = min};
-    if ( Math.abs(min) > max)             {error = min}
-                                     else {error = max};
-                                     
-    Can't effect other colors from in here simply
-    */                                 
-    
-    
-    set_rgb(css_var, int_rgb.map(function(x) {return x + 127}))
-    return rgb;
-}
-
-// The full color space in 3d makes a cube.
-// When the cube is rotated the corners will exit the valid color space.
-// Right now with negative signs stripped components outside the space
-// protrude back in the magnitude they would have exited if untouched.
-
-// One wholesome solution is to only allow colors in the sphere - 
-// - they can be rotated arbitrarily without exiting the space.
-
-// Magnitude of vectors with 1, 2, and 3 components
-// of length 127:
-
-// 127
-// 176.776
-// 216.5056
-
-// When a vector with a magnitude over 127 is rotated to be
-// near paralell to an axis, the component of that axis will be
-// maxxed out even before and after the vector is paralell.
-// This represents an arc of rotation which has a static color
-// component.
-
-// The following vectors have a magnitude of 127:
-// [127, 0, 0]
-// [89.802561211, 89.802561211, 0]
-// [73.323484187, 73.323484187, 73.323484187]
-
-// Another solution is to allow the full cube, but accept that
-// only 90 degree rotations keep all colors within the space.
-
-
-//starting VECTOR  reference value
-const const_r_color1 = [-127, 0  , 0  ]//.map(function(x) {return x - 127})
-const const_r_color2 = [0  , -127, 0  ]//.map(function(x) {return x - 127})
-const const_r_color3 = [0  , 0  , -127]//.map(function(x) {return x - 127})
-const const_r_color4 = [73 , 73 , 73 ]//.map(function(x) {return x - 127})
-
-//stateful values
-var r_color1 = const_r_color1
-var r_color2 = const_r_color2
-var r_color3 = const_r_color3
-var r_color4 = const_r_color4
-
-
-
-var rotateLoop_pause = true;
-
-function rotateLoop_control(pause=rotateLoop_pause, func=slider_rotateLoop) {
-    if     (pause)  {rotateLoop_pause = false; func()}
-    else/*! pause */{rotateLoop_pause = true};
-}
-
-
-function rotateLoop() {
-  var rad = Math.PI / 250;
-  setTimeout(function() {
-    r_f = rotate3_x
-    r_f2 = rotate3_y
-    r_f3 = rotate3_z
-    //console.log("counter: ", counter, " r_color1: ", r_color1);
-    r_color1 = rotate_rgb(r_color1, rad, r_f, "--color1");
-    r_color1 = rotate_rgb(r_color1, rad + 0.005, r_f2, "--color1");
-    r_color1 = rotate_rgb(r_color1, rad + 0.003, r_f3, "--color1");
-    
-    r_color2 = rotate_rgb(r_color2, rad, r_f, "--color2");
-    r_color2 = rotate_rgb(r_color2, rad + 0.005, r_f2, "--color2");
-    r_color2 = rotate_rgb(r_color2, rad + 0.003, r_f3, "--color2");
-    
-    r_color3 = rotate_rgb(r_color3, rad, r_f, "--color3");
-    r_color3 = rotate_rgb(r_color3, rad + 0.005, r_f2, "--color3");
-    r_color3 = rotate_rgb(r_color3, rad + 0.003, r_f3, "--color3");
-    
-    r_color4 = rotate_rgb(r_color4, rad, r_f, "--color4");
-    r_color4 = rotate_rgb(r_color4, rad + 0.005, r_f2, "--color4");
-    r_color4 = rotate_rgb(r_color4, rad + 0.003, r_f3, "--color4");
-    
-    if (! rotateLoop_pause) {
-      rotateLoop();
-    }                     
-  }, 30)
-}
-//rotateLoop()
-
-var slider_x_inc = 1;
-var slider_y_inc = 1;
-var slider_z_inc = 1;
-
-function slider_rotateLoop() {
-  var rad = Math.PI / 250;
-  setTimeout(function() {
-    slider_x.value = (parseInt(slider_x.value) + slider_x_inc) % 629;
-    slider_y.value = (parseInt(slider_y.value) + slider_y_inc) % 629;
-    slider_z.value = (parseInt(slider_z.value) + slider_z_inc) % 629;
-    
-    slide_update();
-    
-    if (! rotateLoop_pause) {
-      slider_rotateLoop();
-    }                     
-  }, 50)
-}
-slider_rotateLoop()
-
-slider_rad = 100
-
-var slider_x = document.getElementById("slider_x");
-var slider_y = document.getElementById("slider_y");
-var slider_z = document.getElementById("slider_z");
-
-slider_x.oninput = function() {slide_update()};
-slider_y.oninput = function() {slide_update()};
-slider_z.oninput = function() {slide_update()};
-
-slider_x.onmousedown = function() {slider_x_inc = 0;}
-slider_x.onmouseup   = function() {slider_x_inc = 1;}
-
-slider_y.onmousedown = function() {slider_y_inc = 0;}
-slider_y.onmouseup   = function() {slider_y_inc = 1;}
-
-slider_z.onmousedown = function() {slider_z_inc = 0;}
-slider_z.onmouseup   = function() {slider_z_inc = 1;}
-
-function slide_update() {
-  r_color1 = const_r_color1;
-  r_color1 = rotate_rgb(r_color1, slider_x.value / slider_rad, rotate3_x, "--color1");
-  r_color1 = rotate_rgb(r_color1, slider_y.value / slider_rad, rotate3_y, "--color1");
-             rotate_rgb(r_color1, slider_z.value / slider_rad, rotate3_z, "--color1");
-             
-  r_color2 = const_r_color2;
-  r_color2 = rotate_rgb(r_color2, slider_x.value / slider_rad, rotate3_x, "--color2");
-  r_color2 = rotate_rgb(r_color2, slider_y.value / slider_rad, rotate3_y, "--color2");
-             rotate_rgb(r_color2, slider_z.value / slider_rad, rotate3_z, "--color2");
-             
-  r_color3 = const_r_color3;
-  r_color3 = rotate_rgb(r_color3, slider_x.value / slider_rad, rotate3_x, "--color3");
-  r_color3 = rotate_rgb(r_color3, slider_y.value / slider_rad, rotate3_y, "--color3");
-             rotate_rgb(r_color3, slider_z.value / slider_rad, rotate3_z, "--color3");
-             
-  r_color4 = const_r_color4;
-  r_color4 = rotate_rgb(r_color4, slider_x.value / slider_rad, rotate3_x, "--color4");
-  r_color4 = rotate_rgb(r_color4, slider_y.value / slider_rad, rotate3_y, "--color4");
-             rotate_rgb(r_color4, slider_z.value / slider_rad, rotate3_z, "--color4");
-}
-
-</script>
