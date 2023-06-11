@@ -11,9 +11,16 @@ Find a way to make this JS universal
   
   Make color list an arbitrary length, rather than hardcoded at 4
 
+Add color addition/deletion class functions
+
+Add autodetection of css color variables
+
+Add special treatment for saturation?
+low saturated colors remain low saturated to account for text/background
+
 */
 
-
+/*
 const colorDiv = document.getElementsByClassName("colors")[0];
 
 //
@@ -24,6 +31,8 @@ left.addEventListener("click", function() {
 	bottom.classList.toggle("active");
 });
 
+
+*/
 
 
 //const global_color_space = "prophoto-rgb"; bunko
@@ -72,10 +81,6 @@ let reference_r_color3 = [0  , 0  , -127]
 let reference_r_color4 = [73 , 73 , 73 ]
 */
 
-let reference_r_color1 = [-102, 127, -102]
-let reference_r_color2 = [65  ,-94, -94]
-let reference_r_color3 = [-100  , -33  , 55]
-let reference_r_color4 = [85 , 127 , -127]
 
 // not used yet
 let starting_colors = [ [-102, 127, -102],
@@ -93,16 +98,21 @@ const const_r_color4 = [30 , 30 , 30 ]
 
 class ColorRotator {
   constructor(start_colors, menu_container_div=document.getElementById("test")) {
-    this.baseColors = start_colors;
-    this.menuContainer = menu_container_div;    
-    this.initColorMenu();
+    this.baseColors = start_colors; // this is an arr of arrs [[0, 255, 0], [255, 0, 0], ...]
+    this.menuContainer = menu_container_div; // this is a div element
+    this.loop_delay = 1; // raise this for better performance, but less smoothness
     
-    this.initColorPicker();
+    this.initColorMenu(); // add color sliders, pickers buttons etc. and their event listeners
+    this.initColorPicker(); // add a color picker for each start color and their event listeners
     
+    this.slide_update = this.slide_update.bind(this);
+    this.slider_rotateLoop = this.slider_rotateLoop.bind(this);
     
   }
   
+  // add color sliders, pickers buttons etc. and their event listeners
   initColorMenu() {
+    const that = this;
     this.menuContainer.innerHTML += `<div class="sliders">
                                       <input type="range" class="axis_slider" id="slider_x" value="0" min="0" max="629" step="0.001"><br>
                                       <input type="range" class="axis_slider" id="slider_y" value="0" min="0" max="629" step="0.001"><br>
@@ -111,17 +121,87 @@ class ColorRotator {
                                       <div class="buttons">
                                       <button type="button"
                                               id="auto-rotate"
-                                              onclick="rotateLoop_control()"
+                                              onclick="if you see this an error has occured"
                                               >
                                       </button>
                                       </div>
                                       <div class="colors"></div>`
+                                      
+
+  this.slider_x = document.getElementById("slider_x");
+  this.slider_y = document.getElementById("slider_y");
+  this.slider_z = document.getElementById("slider_z");
+  
+  this.slider_x_inc = 0.1;
+  this.slider_y_inc = 0.1;
+  this.slider_z_inc = 0.1;
+
+  this.slider_x.oninput = function() {that.slide_update()};
+  this.slider_y.oninput = function() {that.slide_update()};
+  this.slider_z.oninput = function() {that.slide_update()};
+
+  // prevents automatic sliding when clicked
+  this.slider_x.onmousedown = function() {this.slider_x_inc = 0;}
+  this.slider_x.onmouseup   = function() {this.slider_x_inc = 0.1;}
+  
+  this.slider_y.onmousedown = function() {this.slider_y_inc = 0;}
+  this.slider_y.onmouseup   = function() {this.slider_y_inc = 0.1;}
+  
+  this.slider_z.onmousedown = function() {this.slider_z_inc = 0;}
+  this.slider_z.onmouseup   = function() {this.slider_z_inc = 0.1;}
+                                      
+  
+  // moves sliders automatically when false
+  document.getElementById("auto-rotate").onclick = function() {that.rotateLoop_control()};
+  this.rotateLoop_pause = true;
+  this.slider_rad = 100
+  this.slider_rotateLoop()
   }
   
+  rotateLoop_control(pause=this.rotateLoop_pause, func=this.slider_rotateLoop) {
+    if     (pause)  {this.rotateLoop_pause = false; func()}
+    else/*! pause */{this.rotateLoop_pause = true};
+  }
+
+  
+  slider_rotateLoop() {
+    const that = this;
+    const rad = Math.PI / 250;
+
+    setTimeout(function() {
+      that.slider_x.value = (((parseFloat(slider_x.value) + that.slider_x_inc) % 629) + 629) % 629;
+      that.slider_y.value = (((parseFloat(slider_y.value) + that.slider_y_inc) % 629) + 629) % 629;
+      that.slider_z.value = (((parseFloat(slider_z.value) + that.slider_z_inc) % 629) + 629) % 629;
+    
+      that.slide_update();
+      
+      if (! that.rotateLoop_pause) {
+        that.slider_rotateLoop();
+      }                     
+    }, 1)
+  }
+  
+  slide_update() {
+    const that = this;
+    const color_space = global_color_space;
+
+    for (let i=0; i < this.baseColors.length; i++) {
+      let color = this.baseColors[i];
+      color = rotate3_x(color, that.slider_x.value / that.slider_rad);
+      color = rotate3_y(color, that.slider_y.value / that.slider_rad);
+      color = rotate3_z(color, that.slider_z.value / that.slider_rad);
+      set_rgb(`--c${i}`, color, color_space);
+    }
+  }
+  
+  // add a color picker for each start color and their event listeners
   initColorPicker() {
     // for each baseColor, add an HTML color picker and init the value
     let that = this;
     for (let i = 0; i < this.baseColors.length; i++) {
+      that.add_color_picker(i, this.baseColors[i]);
+      continue;
+      /*
       let picker = document.createElement('input');
       picker.type = 'color';
       picker.className = 'color_picker';
@@ -134,23 +214,72 @@ class ColorRotator {
       // Create a closure to capture the current value of i
       (function(index) {
         // Add an event listener to the picker
+        
+        //////////////////////////////////////////////////
+        // Color Picker event function
+        //
+        // When this color picker is given a new value...
         picker.addEventListener('input', function() {
-          // 1. Change CSS variable value
-          // 2. unrotate
-          console.log(`Picker ${index} changed to ${picker.value}`);
-          that.test(picker.value);
+          
+          // 1. Unrotate to get correct baseColor 
+          const unr = update_pick(picker.value, that.slider_rad);
+          that.baseColors[index] = unr;
+          
+          // 2. Change CSS variable value (update DOM)
+          that.update_css(index, picker.value);
+          
         });
+        // End color picker event function
+        /////////////////////////////////////////////////
       })(i);
+      */
     }
   }
   
-  test(color) {
-    const unr = update_pick(color);
-    console.log("unr: ", unr);
+  add_color_picker(index, color) {
+    console.log(index, color)
+    const that = this;
+    let picker = document.createElement('input');
+    picker.type = 'color';
+    picker.className = 'color_picker';
+    picker.id = `c${index}`;
+    picker.value = rgbToHex(...color.map(x => x + 127));
+
+    // Add the picker to the DOM
+    // TODO - don't grab from global (document) grab from this.menuContainer
+    document.getElementsByClassName('colors')[0].appendChild(picker);
+
+    picker.addEventListener('input', function() {
+          
+      // 1. Unrotate to get correct baseColor 
+      const unr = update_pick(picker.value, that.slider_rad);
+      that.baseColors[index] = unr;
+          
+      // 2. Change CSS variable value (update DOM)
+      that.update_css(index, picker.value);
+          
+      });
+      // End color picker event function
+      /////////////////////////////////////////////////
+  }
+  
+  update_css(index, color) {
+  
+    color = hexToRgb(color);
+    color = clamp_rgb(color);
+		color = color.map(function(x) {return Math.round(x + 127)});
+			 
+		const rgb_str = 'rgb('.concat(String(color[0]), ',', String(color[1]), ',', String(color[2]), ')');
+			
+		const name = "--c" + String(index);
+			
+    r.style.setProperty(name, rgb_str);
+    // slide_update();
   }
   
 }
-const a = new ColorRotator(starting_colors)
+
+const class_test = new ColorRotator(starting_colors)
 
 /////////////////////////////////////////////////////////////////////////////////
 // FUNCTIONS TO HANDLE COLOR PICKER UPDATES /////////////////////////////////////
@@ -159,7 +288,7 @@ const a = new ColorRotator(starting_colors)
 // then unrotated, because CSS var is a rotated version of reference color
 // we need to get the unrotated version to change the reference color
 // then turn it back into shifted rgb for the cartesian plot
-function update_pick(hex_color) {
+function update_pick(hex_color, slider_rad) {
 	let unr = hexToRgb(hex_color).map(x => x - 127);
 	unr = rotate3_x(unr, -slider_x.value / slider_rad);
 	unr = rotate3_y(unr, -slider_y.value / slider_rad);
@@ -167,35 +296,7 @@ function update_pick(hex_color) {
 	//unr = unr.map(x => Math.round(x + 127));
 	return unr;
 }
-/*
-const picker1 = document.getElementById("color1");
-picker1.addEventListener("input", function() {
-	const unr = update_pick(this.value);
-	reference_r_color1 = unr;
-	slide_update();
-});
 
-const picker2 = document.getElementById("color2");
-picker2.addEventListener("input", function() {
-	const unr = update_pick(this.value);
-	reference_r_color2 = unr;
-	slide_update();
-});
-
-const picker3 = document.getElementById("color3");
-picker3.addEventListener("input", function() {
-	const unr = update_pick(this.value);
-	reference_r_color3 = unr;
-	slide_update();
-});
-
-const picker4 = document.getElementById("color4");
-picker4.addEventListener("input", function() {
-	const unr = update_pick(this.value);
-	reference_r_color4 = unr;
-	slide_update();
-});
-*/
 // FUNCTIONS TO HANDLE COLOR PICKER UPDATES /////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
 
@@ -317,14 +418,14 @@ function set_rgb(name, value, color_space="rgb") {
 			// use rgb colors for code consistency 
 			str = 'rgb('.concat(String(value[0]), ',', String(value[1]), ',', String(value[2]), ')');
 			
-    		r.style.setProperty(name, str);
+      r.style.setProperty(name, str);
     		
     		
-    		// Update color picker value
-    		const id = name.slice(2);
-    		document.getElementById(id).value = rgbStringToHex(str);
+      // Update color picker value
+      const id = name.slice(2);
+      document.getElementById(id).value = rgbStringToHex(str);
     		
-    		break;
+      break;
    
    		// likely defunct -- would take some doing to make compat with color picker
    		case "prophoto-rgb":
@@ -402,90 +503,3 @@ function rotate_rgb(rgb, ang, axis, css_var, color_space="rgb") {
 }
 
 
-//mutable values
-var r_color1 = reference_r_color1
-var r_color2 = reference_r_color2
-var r_color3 = reference_r_color3
-var r_color4 = reference_r_color4
-
-
-var rotateLoop_pause = true;
-
-function rotateLoop_control(pause=rotateLoop_pause, func=slider_rotateLoop) {
-    if     (pause)  {rotateLoop_pause = false; func()}
-    else/*! pause */{rotateLoop_pause = true};
-}
-
-var slider_x_inc = 0.1;
-var slider_y_inc = 0.1;
-var slider_z_inc = 0.1;
-
-// moves sliders automatically
-function slider_rotateLoop() {
-  var rad = Math.PI / 250;
-  setTimeout(function() {
-    slider_x.value = (((parseFloat(slider_x.value) + slider_x_inc) % 629) + 629) % 629;
-    slider_y.value = (((parseFloat(slider_y.value) + slider_y_inc) % 629) + 629) % 629;
-    slider_z.value = (((parseFloat(slider_z.value) + slider_z_inc) % 629) + 629) % 629;
-    
-    slide_update();
-    
-    if (! rotateLoop_pause) {
-      slider_rotateLoop();
-    }                     
-  }, 1)
-}
-slider_rotateLoop()
-
-slider_rad = 100
-
-var slider_x = document.getElementById("slider_x");
-var slider_y = document.getElementById("slider_y");
-var slider_z = document.getElementById("slider_z");
-
-slider_x.oninput = function() {slide_update()};
-slider_y.oninput = function() {slide_update()};
-slider_z.oninput = function() {slide_update()};
-
-// prevents automatic sliding when clicked
-slider_x.onmousedown = function() {slider_x_inc = 0;}
-slider_x.onmouseup   = function() {slider_x_inc = 0.1;}
-
-slider_y.onmousedown = function() {slider_y_inc = 0;}
-slider_y.onmouseup   = function() {slider_y_inc = 0.1;}
-
-slider_z.onmousedown = function() {slider_z_inc = 0;}
-slider_z.onmouseup   = function() {slider_z_inc = 0.1;}
-
-
-function slide_update() {
-
-  const color_space = global_color_space;
-  
-  var r_color1 = reference_r_color1
-  r_color1 = rotate3_x(r_color1, slider_x.value / slider_rad);
-  r_color1 = rotate3_y(r_color1, slider_y.value / slider_rad);
-  r_color1 = rotate3_z(r_color1, slider_z.value / slider_rad);
-  set_rgb("--color1", r_color1, color_space);
-  
-  var r_color2 = reference_r_color2
-  r_color2 = rotate3_x(r_color2, slider_x.value / slider_rad);
-  r_color2 = rotate3_y(r_color2, slider_y.value / slider_rad);
-  r_color2 = rotate3_z(r_color2, slider_z.value / slider_rad);
-  set_rgb("--color2", r_color2, color_space);
-  
-  var r_color3 = reference_r_color3
-  r_color3 = rotate3_x(r_color3, slider_x.value / slider_rad);
-  r_color3 = rotate3_y(r_color3, slider_y.value / slider_rad);
-  r_color3 = rotate3_z(r_color3, slider_z.value / slider_rad);
-  set_rgb("--color3", r_color3, color_space);
-  
-  var r_color4 = reference_r_color4
-  r_color4 = rotate3_x(r_color4, slider_x.value / slider_rad);
-  r_color4 = rotate3_y(r_color4, slider_y.value / slider_rad);
-  r_color4 = rotate3_z(r_color4, slider_z.value / slider_rad);
-  set_rgb("--color4", r_color4, color_space);
-}
-
-
-slide_update();
