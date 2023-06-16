@@ -8,9 +8,62 @@ Add autodetection of css color variables
 Add special treatment for saturation?
 low saturated colors remain low saturated to account for text/background
 
+Export as GIF for animated wallpaper/screensaver
+
+
+*/
+
+/*
+HOW TO USE THIS SCRIPT:
+
+Add the following script tags to an HTML in the same directory as this file:
+
+----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+
+<script type="text/javascript"
+  		src="colorRotator.js">
+</script>
+
+<script type="text/javascript">
+
+	const colors = ["--c0", "--c1", "--c2", "--c3", "--c4", "--c5"];
+	const rotateGroup = new ColorRotator(colors, document.getElementById("colorMenu"))
+</script>
+
+----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
+
+First Argument in an array of the CSS color vars
+which will be modified (rotated) via the color menu.
+	If left undefined, it will automatically use CSS
+	vars with the name scheme "--c0, --c1, --c2... --cN"
+	that are rgb or hex color values.
+
+Second Argument is the div the color menu is placed in.
+	If left undefined, it will automatically target a div
+	with the id="colorMenu".
 
 
 
+WHAT THIS SCRIPT DOES:
+
+This script will "rotate" color values in the 3d Cartesian plane via an
+added color menu. Red, Green, and Blue values are considered vector components
+and the values are each shifted such that the middle magnitude of each is at
+[0, 0, 0] (which ends up equalling rgb(127, 127, 127)).
+
+There is a clamping system described in comments below which keeps all colors
+both inside the valid space (which is a cube) but also adjusts all other colors
+such that their spatial relationship remains the same sans the rotations and
+relative magnitudes i.e. all vectors have their magnitudes adjusted equivalently
+such that none of them protrude outside the valid rgb space.
+
+*/
+
+
+/*
+// Notes on the math and on color selection:
 
 // The full color space in 3d makes a cube.
 // When the cube is rotated the corners will exit the valid color space.
@@ -80,7 +133,16 @@ const color_menu = `<div class="sliders">
                         >
                       </button>
                     </div>
-                    <div class="colors"> </div>`
+                    <div id="colorRotator_colorSelectors"> </div>`
+                    // in case you need to target these elements for styling...
+                    // example contents of "colorRotator_colorSelectors" div:
+                    //
+                    // <input type="color" class="colorSelector" id="--c0">
+                    // <input type="color" class="colorSelector" id="--c1">
+                    // ...
+                    // class name is constant, but id depends on first arg of colorRotator()
+                    // if either changes the script may break
+                    
 
 class ColorRotator {
   constructor(start_colors=getCssColors(), menu_container_div=document.getElementById("colorMenu")) {
@@ -162,10 +224,8 @@ class ColorRotator {
     const that = this;
     const color_space = global_color_space;
     
-    // dict version
     let rotated_colors = {};
     
-    // dict version
     for (const key in this.baseColors) {
       let color = this.baseColors[key];
       color = rotate3_x(color, that.slider_x.value / that.slider_rad);
@@ -175,29 +235,6 @@ class ColorRotator {
       rotated_colors[key] = color;
     }
     
-    
-    // arrary version
-    
-    /*
-    this.clamp = this.max_clamp(rotated_colors);
-    
-    for (let i=0; i < rotated_colors.length; i++) {
-      if (this.clamp_rule == "global") {
-        const clamped = rotated_colors[i].map(x => x / this.clamp);
-        this.update_css(`--c${i}`, clamped);
-      }
-      else if (this.clamp_rule == "individual") {
-        let clamped = clamp_rgb(color);
-        this.update_css(`--c${i}`, clamped);
-      }
-      else { // no clamping -- let rgb just take values out of its range
-        this.update_css(`--c${i}`, rotated_colors[i]);
-      }
-    }
-    
-    */
-    
-    // dict version
     
     this.clamp = this.max_clamp(rotated_colors);
     
@@ -222,31 +259,28 @@ class ColorRotator {
     // for each baseColor, add an HTML color picker and init the value
     let that = this;
     
-    // dict version
     for (const key in this.baseColors) {
-      this.add_color_picker(key, this.baseColors[key]);
+      this.add_color_selector(key, this.baseColors[key]);
       }
   }
   
-  add_color_picker(index, color) {
+  add_color_selector(index, color) {
     const that = this;
-    let picker = document.createElement('input');
-    picker.type = 'color';
-    picker.className = 'color_picker';
+    const selector = document.createElement('input');
+    selector.type = 'color';
+    selector.className = 'colorSelector';
     
-    // dict version
-    picker.id = index;
-    picker.value = rgbToHex(...color.map(x => x + 127));
+    selector.id = index;
+    selector.value = rgbToHex(...color.map(x => x + 127));
 
-    // Add the picker to the DOM
+    // Add the selector to the DOM
     // TODO - don't grab from global (document) grab from this.menuContainer
-    document.getElementsByClassName('colors')[0].appendChild(picker);
+    document.getElementById('colorRotator_colorSelectors').appendChild(selector);
 
-    picker.addEventListener('input', function() {
-      
+    selector.addEventListener('input', function() {
           
       // 1. Unrotate to get correct baseColor 
-      const unr = update_pick(picker.value, that.slider_rad, that.clamp);
+      const unr = update_pick(selector.value, that.slider_rad, that.clamp);
       // unclamp it
       
       that.baseColors[index] = unr;
@@ -257,7 +291,7 @@ class ColorRotator {
       that.slide_update();
           
       });
-      // End color picker event function
+      // End color selector event function
       /////////////////////////////////////////////////
   }
   

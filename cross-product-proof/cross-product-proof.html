@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="cross-product-proof.css">
 <title> Cross Product Proof </title>
 <script type="text/x-mathjax-config">
   MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
@@ -36,11 +37,11 @@ Simple Geometric Proof on the Equivalence of Cross Product Formulas</h2>
 </p>
 
 <p>
-The cross product between two vectors is notably defined in two ways.
+The cross product between two vectors is notably defined in two ways:
 <p>
 The first is as a vector orthogonal<sup><a href="#fn1" id="ref1">1</a></sup> to the two input vectors ($\vec{n}$) with a length equal to the area of the parrallelogram those input vectors outline:
 
-<img src="800px-Cross_product_parallelogram.svg.png" id="wiki-img">
+<img src="assets/800px-Cross_product_parallelogram.svg.png" id="wiki-img">
 <p style="text-align:center; font-size: 12px" class="math-block">
 Credit: 
 <a href="https://en.wikipedia.org/wiki/Cross_product#/media/File:Cross_product_parallelogram.svg">
@@ -52,7 +53,7 @@ $\vec{a} \times \vec{b} = | \vec{a} || \vec{b} | \sin{\theta} \  \vec{n}$
 
 
 <p>
-Or it is defined in the 'component form,' which is simply the direct formula for the $x$, $y$, and $z$ components.
+Or it is defined in the 'component form,' which gives the $x$, $y$, and $z$ components of the cross-product using only the components of the input vectors.
 
 <p class="math-block">
 $\vec{a} \times \vec{b} = \langle
@@ -71,11 +72,12 @@ The fact that $\vec{a} \times \vec{b} = | \vec{a} || \vec{b} | \sin{\theta} \  \
 $
 are the same vectors is not obvious and will be proved here geometrically, requiring only basic knowledge of vector arithmetic and trigonometry.<sup><a href="#fn2" id="ref2">2</a></sup>
 
-The formula $\vec{a} \times \vec{b} = | \vec{a} || \vec{b} | \sin{\theta} \  \vec{n}$ will not be explicitly used, but the geometric relationship between the cross-product vector and paralellogram will be. 
+The formula $\vec{a} \times \vec{b} = | \vec{a} || \vec{b} | \sin{\theta} \  \vec{n}$ will not be explicitly used, but the geometric relationship it implies between the cross-product vector and resultant paralellograms will be - in the form of the diagram below. 
 
 <h2>Proof</h2>
-The following diagram uses the geometric definition of the cross product, that $\vec{a} \times \vec{b} = \vec{c}$ is a vector orthogonal to the plane defined by $\vec{a}$ and $\vec{b}$, with a length equal the area of the parallelogram those vectors define.
+The following diagram uses the geometric definition of the cross product, that $\vec{a} \times \vec{b} = \vec{c}$ is a vector orthogonal to the plane defined by $\vec{a}$ and $\vec{b}$, with a length equal the area of the parallelogram those vectors define. This proof specifically targets the z-component but can easily be relabelled to obtain $x$ and $y$ components.
 
+<p>
 The three core elements are:
 <ul><li>
 the parallelogram formed by vectors $\vec{a}$ and $\vec{b}$ with area $A$
@@ -86,7 +88,7 @@ the parallelogram projected onto the xy-plane.
 </ul>
 
 <div class="diagram fst">
-<img id="diagram-img" src="cross-product-proof.png" alt="proof diagram"/>
+<img id="diagram-img" src="assets/cross-product-proof.png" alt="proof diagram"/>
 </div>
 
 <p>
@@ -134,7 +136,7 @@ Area of Parallelogram $(A_{xy})$</h2>
 
 <div class="diagram para">
 
-<img id="diagram-img" src="parallelogram-cross-proof.png" alt="proof diagram"/>
+<img id="diagram-img" src="assets/parallelogram-cross-proof.png" alt="proof diagram"/>
 <!--
 <object data="parallelogram-cross-proof.svg" type="image/svg+xml"></object> -->
 <p style="padding-top: 0px; text-align:center; font-size: 16px" class="math-block">
@@ -161,16 +163,25 @@ $
 $ 
 A_{xy} = \hspace{3.25em} $<span id="m2" > $ \vec{a}_x\vec{b}_y $ </span>$ \hspace{2.75em} - \hspace{4.4em} $<span id="m5" > $ \vec{b}_x\vec{a}_y $ </span>
 <br>
+<!--
 $ A_{xy} = $<span id="m2" > $ \vec{a}_x\vec{b}_y $ </span>$ - $<span id="m5" > $ \vec{b}_x\vec{a}_y $ </span>
+-->
+$A_{xy} = \vec{a}_x\vec{b}_y - \vec{b}_x\vec{a}_y$
 
 
 </div>
 
 <p>
-The trignometric definition was used to show that the magnitude of one component of a cross product is equal to the paralellogram formed by the two vectors projected onto the other two components. Then the area of that projected paralellogram is calculated in terms of those components, giving the two forms for the same value.
+The trignometric definition was used to show that the magnitude of one component, in this case the z-compomnent, of a cross product is equal to the paralellogram formed by the two vectors projected onto the other two components.
+
+By obtaining the the area of that same paralellogram in terms of just the magnitude of the two projected components, the z-component of the cross-product is obtained while only requiring the $x$ and $y$ components of the input vectors.
 
 <p>
 This proof only demonstrated the process for one component. To obtain the $x$ and $y$ components, the exact same proof can be performed by projecting the parrallelogram onto each of the two other planes ($xz$, $zy$), and again equating that projection to the length of the remaining third component.
+
+<p>
+So from a diagram built on the trigonometric definition of the cross-product, the pure component formula can be produced; that is, terms for each component of the cross-product vector which have no triginometric functions and only rely on the component magnitudes of the input vectors.
+
 
 <p class="math-block">
 $| \vec{a} || \vec{b} | \sin{\theta} \  \vec{n}
@@ -183,7 +194,7 @@ $
 
 <h2>Afterword</h2>
 <p>
-One caveat is that there is nothing stopping any component in the resultant vector from being negative despite there being no negative areas to corrospond in the projected parrallelogram.
+One caveat is that there is nothing stopping any component in the resultant vector from being negative despite the concept of a 'negative area' being somewhat nonsensical when considering the projected paralellogram.
 
 <p>
 The resolution is to understand that the areas corrospond to the <i>magnitudes</i> of the resultant vector's components, and the direction of the cross product (which can be parralell to $\vec{a}$ and $\vec{b}$ and have the corrosponding magnitudes going both forward or in reverse) is simply defined according to the coordinate system's directionality. More on that can be read at <a href="https://en.wikipedia.org/wiki/Cross_product#Direction">Wikipedia</a>.
@@ -214,208 +225,8 @@ Contact: <a href="mailto: mattwilson888@gmail.com"> mattwilson888@gmail.com </a>
 
 <p style="font-weight: lighter">
 My original notes:
-<img id="og-notes" src="original-notes.jpg">
+<img id="og-notes" src="assets/original-notes.jpg">
 
 
 </body>
 </html>
-
-<style>
-
-// Gradient scheme requires hmtl{ position:relative;}
-:root {
-    --color1: #c5bbbb;
-    --color2: #9a8d8d;
-    --color3: #c5bbbb;
-    --color4: #9a8d8d;
-}
-
-.left {
-    position: absolute;
-    top: 0;
-    left: 0;
-    
-    width: 100%;
-    height: 1000px;
-    height: 100%;
-    //min-height: 100%;
-    
-    background: linear-gradient(var(--color1), var(--color2));
-    -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,0), rgba(0,0,0,1) 100%);
-    -webkit-mask-size: 100% 100%;
-    -webkit-mask-repeat: no-repeat;
-    -webkit-mask-position: left top;
-    z-index: -1;
-}
-
-.right {
-    position: absolute;
-    top: 0;
-    left: 0;
-    
-    width: 100%;
-    height: 1000px;
-    height: 100%;
-    //min-height: 100%;
-    
-    background: linear-gradient(var(--color3) 80%, var(--color4));
-    z-index: -2;
-}
-
-html {
-    background-color: #c5bbbb;
-    position: relative;
-}
-
-body {
-    z-index: 0;
-
-    font-size: 14px;
-    font-family: "Latin Modern";
-    //font-family: "Noto";
-    margin: 10px;
-    margin-left: 10%;
-    
-    min-width: 600px;
-    max-width: 640px;
-    
-    background-color: #eeeeee;
-    border: solid #666666 5px;
-    border-radius: 10px;
-    padding: 10px;
-    padding-bottom: 0px;
-    }
-
-#title {
-    text-align: center;
-}
-
-#quote {
-    border: solid 2px;
-    border-radius: 7px;
-    background-color: lightgrey;
-    padding: 4px;
-}
-
-#wiki-img {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width: 50%
-}
-
-#colormath {
-    whitespace: nowrap;
-    overflow: hidden;
-}
-
-.diagram {
-    width: 100%;
-    max-width: 800px;
-    //background-color: green;
-    }
-    
-.diagram.fst {
-    padding-top: 30px;
-    padding-bottom: 30px;
-    }
-    
-svg {
-    width: 100%;
-    height: 100%;
-    max-width:800px;
-}
-
-#diagram-img {
-    //height: 10px;
-    width: 100%;
-    }
-
-.math-block {
-    //font-size: min(3vw, 24px);
-    font-size: min(3vw, 21px);
-}
-
-.diagram.para img {
-    margin-bottom: 30px;
-}
-
-.diagram.para:hover #m1 {
-    color: #eb0010aa;
-    }
-.diagram.para:hover #m2 {
-    color: #4b00f4aa;
-    }
-.diagram.para:hover #m3 {
-    color: #0068ffaa;
-    }
-.diagram.para:hover #m4 {    
-    color: #0068ffaa;
-    }
-.diagram.para:hover #m5 {
-    color: #009d00aa;
-    }
-.diagram.para:hover #m6 {
-    color: #eb0010aa;
-    }
-    
-#og-notes {
-    margin-top: 15px;
-    width: 100%;
-    border: solid white 0px;
-    border-radius: 10px;
-}
-    /*
-    color:#dae6fd;
-    color:#dafdf3;
-    color:#fbfcce;
-    color:#defee2;
-    color:#ffeeff;
-    */
-
-
-/*
-#path7172:hover{
-    fill:#000000 !important;
-    fill-opacity:0.22821577 !important;
-    stroke:yellow  !important;
-    stroke-width:0.72360384px  !important;
-    stroke-linecap:butt  !important;
-    stroke-linejoin:miter  !important;
-    stroke-opacity:1  !important;
-}
-
-#path7174:hover{
-    fill:#000000 !important;
-    fill-opacity:0.22821577 !important;
-    stroke:yellow  !important;
-    stroke-width:0.72360384px  !important;
-    stroke-linecap:butt  !important;
-    stroke-linejoin:miter  !important;
-    stroke-opacity:1  !important;}
-
-#path7176:hover{
-    fill:#000000 !important;
-    fill-opacity:0.22821577 !important;
-    stroke:yellow  !important;
-    stroke-width:0.72360384px  !important;
-    stroke-linecap:butt  !important;
-    stroke-linejoin:miter  !important;
-    stroke-opacity:1  !important;}
-  */  
-</style> 
-
-<script>
-/*
-b = document.querySelector('#bd') 
-h = b.offsetHeight;
-
-left  = document.getElementsByClassName('left')[0]
-right = document.getElementsByClassName('right')[0]
-
-left.style.height = h + 'px';
-right.style.height = h + 'px';
-*/
-</script>
-
-

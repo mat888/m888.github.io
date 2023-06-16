@@ -1,16 +1,6 @@
 /*
 TODO:
 
-Add global clamping
-  If one color is clamped, clamp all others by the same ratio
-    Otherwise colors lose their spatial relationship
-
-Find a way to make this JS universal
-  If this JS is dropped into an arbitrary web page
-  allow it to change the theme by rotating its color vars
-  
-  Make color list an arbitrary length, rather than hardcoded at 4
-
 Add color addition/deletion class functions
 
 Add autodetection of css color variables
@@ -18,28 +8,9 @@ Add autodetection of css color variables
 Add special treatment for saturation?
 low saturated colors remain low saturated to account for text/background
 
-*/
-
-/*
-const colorDiv = document.getElementsByClassName("colors")[0];
-
-//
-// this handles the "click to show UI" functionality
-const left = document.getElementsByClassName("left")[0];
-const bottom = document.getElementsByClassName("bottom")[0];
-left.addEventListener("click", function() {
-	bottom.classList.toggle("active");
-});
 
 
-*/
 
-
-//const global_color_space = "prophoto-rgb"; bunko
-const global_color_space = "rgb";
-
-// Get the root element
-const r = document.querySelector(':root');
 
 // The full color space in 3d makes a cube.
 // When the cube is rotated the corners will exit the valid color space.
@@ -80,14 +51,6 @@ let reference_r_color2 = [0  , -127, 0  ]
 let reference_r_color3 = [0  , 0  , -127]
 let reference_r_color4 = [73 , 73 , 73 ]
 */
-
-
-// not used yet
-let starting_colors = [ [-102, 127, -102],
-						[65  ,-94, -94],
-						[-100  , -33  , 55],
-						[85 , 127 , -127]];
-
 /*
 // initial values adjusted for percentages [0%, 100%]
 const const_r_color1 = [-50, 0  , 0  ]
@@ -96,16 +59,44 @@ const const_r_color3 = [0  , 0  , -50]
 const const_r_color4 = [30 , 30 , 30 ]
 */
 
+
+
+
+//const global_color_space = "prophoto-rgb"; // bunko (doesn't not work well with multiple gradients)
+const global_color_space = "rgb";
+
+// Get the root element
+const r = document.querySelector(':root');
+
+const color_menu = `<div class="sliders">
+                      <input type="range" class="axis_slider" id="slider_x" value="0" min="0" max="629" step="0.001"><br>
+                      <input type="range" class="axis_slider" id="slider_y" value="0" min="0" max="629" step="0.001"><br>
+                      <input type="range" class="axis_slider" id="slider_z" value="0" min="0" max="629" step="0.001">
+                    </div>
+                    <div class="buttons">
+                      <button type="button"
+                        id="auto-rotate"
+                        onclick="if you see this an error has occured"
+                        >
+                      </button>
+                    </div>
+                    <div class="colors"> </div>`
+
 class ColorRotator {
-  constructor(start_colors, menu_container_div=document.getElementById("test")) {
-    this.baseColors = start_colors; // this is an arr of arrs [[0, 255, 0], [255, 0, 0], ...]
+  constructor(start_colors=getCssColors(), menu_container_div=document.getElementById("colorMenu")) {
+    this.baseColors = start_colors; // this is an arr of arrs [[0, 127, 0], [-127, 0, 0], ...]
+    
+    this.baseColors = getCssStartColors(start_colors);
+
     this.menuContainer = menu_container_div; // this is a div element
     this.loop_delay = 1; // raise this for better performance, but less smoothness
+    this.clamp = 1; // ratio used to reduce colors back into color space while keeping same relative magnitudes
+    this.clamp_rule = "global";
     
     this.initColorMenu(); // add color sliders, pickers buttons etc. and their event listeners
     this.initColorPicker(); // add a color picker for each start color and their event listeners
     
-    this.slide_update = this.slide_update.bind(this);
+    this.slide_update = this.slide_update.bind(this); // keeps 'this' in scope (not sure if necessary)
     this.slider_rotateLoop = this.slider_rotateLoop.bind(this);
     
   }
@@ -113,49 +104,35 @@ class ColorRotator {
   // add color sliders, pickers buttons etc. and their event listeners
   initColorMenu() {
     const that = this;
-    this.menuContainer.innerHTML += `<div class="sliders">
-                                      <input type="range" class="axis_slider" id="slider_x" value="0" min="0" max="629" step="0.001"><br>
-                                      <input type="range" class="axis_slider" id="slider_y" value="0" min="0" max="629" step="0.001"><br>
-                                      <input type="range" class="axis_slider" id="slider_z" value="0" min="0" max="629" step="0.001">
-                                      </div>
-                                      <div class="buttons">
-                                      <button type="button"
-                                              id="auto-rotate"
-                                              onclick="if you see this an error has occured"
-                                              >
-                                      </button>
-                                      </div>
-                                      <div class="colors"></div>`
-                                      
+    this.menuContainer.innerHTML += color_menu
 
-  this.slider_x = document.getElementById("slider_x");
-  this.slider_y = document.getElementById("slider_y");
-  this.slider_z = document.getElementById("slider_z");
+    this.slider_x = document.getElementById("slider_x");
+    this.slider_y = document.getElementById("slider_y");
+    this.slider_z = document.getElementById("slider_z");
   
-  this.slider_x_inc = 0.1;
-  this.slider_y_inc = 0.1;
-  this.slider_z_inc = 0.1;
+    this.slider_x_inc = 0.1;
+    this.slider_y_inc = 0.1;
+    this.slider_z_inc = 0.1;
 
-  this.slider_x.oninput = function() {that.slide_update()};
-  this.slider_y.oninput = function() {that.slide_update()};
-  this.slider_z.oninput = function() {that.slide_update()};
+    this.slider_x.oninput = function() {that.slide_update()};
+    this.slider_y.oninput = function() {that.slide_update()};
+    this.slider_z.oninput = function() {that.slide_update()};
 
-  // prevents automatic sliding when clicked
-  this.slider_x.onmousedown = function() {this.slider_x_inc = 0;}
-  this.slider_x.onmouseup   = function() {this.slider_x_inc = 0.1;}
-  
-  this.slider_y.onmousedown = function() {this.slider_y_inc = 0;}
-  this.slider_y.onmouseup   = function() {this.slider_y_inc = 0.1;}
-  
-  this.slider_z.onmousedown = function() {this.slider_z_inc = 0;}
-  this.slider_z.onmouseup   = function() {this.slider_z_inc = 0.1;}
-                                      
-  
-  // moves sliders automatically when false
-  document.getElementById("auto-rotate").onclick = function() {that.rotateLoop_control()};
-  this.rotateLoop_pause = true;
-  this.slider_rad = 100
-  this.slider_rotateLoop()
+    // prevents automatic sliding when clicked
+    this.slider_x.onmousedown = function() {that.slider_x_inc = 0;}
+    this.slider_x.onmouseup   = function() {that.slider_x_inc = 0.1;}
+    
+    this.slider_y.onmousedown = function() {that.slider_y_inc = 0;}
+    this.slider_y.onmouseup   = function() {that.slider_y_inc = 0.1;}
+    
+    this.slider_z.onmousedown = function() {that.slider_z_inc = 0;}
+    this.slider_z.onmouseup   = function() {that.slider_z_inc = 0.1;}
+                                        
+    // moves sliders automatically when false
+    document.getElementById("auto-rotate").onclick = function() {that.rotateLoop_control()};
+    this.rotateLoop_pause = true;
+    this.slider_rad = 100
+    this.slider_rotateLoop()
   }
   
   rotateLoop_control(pause=this.rotateLoop_pause, func=this.slider_rotateLoop) {
@@ -163,12 +140,12 @@ class ColorRotator {
     else/*! pause */{this.rotateLoop_pause = true};
   }
 
-  
   slider_rotateLoop() {
     const that = this;
     const rad = Math.PI / 250;
 
     setTimeout(function() {
+      // convoluted formula allows negative values to wrap around modulo correctly i.e. -4 mod 10 = 6
       that.slider_x.value = (((parseFloat(slider_x.value) + that.slider_x_inc) % 629) + 629) % 629;
       that.slider_y.value = (((parseFloat(slider_y.value) + that.slider_y_inc) % 629) + 629) % 629;
       that.slider_z.value = (((parseFloat(slider_z.value) + that.slider_z_inc) % 629) + 629) % 629;
@@ -184,65 +161,106 @@ class ColorRotator {
   slide_update() {
     const that = this;
     const color_space = global_color_space;
+    
+    // array version
+    //let rotated_colors = []
+    
+    // dict version
+    let rotated_colors = {};
+    
 
+    // array version
+    /*
     for (let i=0; i < this.baseColors.length; i++) {
       let color = this.baseColors[i];
       color = rotate3_x(color, that.slider_x.value / that.slider_rad);
       color = rotate3_y(color, that.slider_y.value / that.slider_rad);
       color = rotate3_z(color, that.slider_z.value / that.slider_rad);
-      set_rgb(`--c${i}`, color, color_space);
+      
+      rotated_colors.push(color);
     }
+    */
+    
+    // dict version
+    for (const key in this.baseColors) {
+      let color = this.baseColors[key];
+      color = rotate3_x(color, that.slider_x.value / that.slider_rad);
+      color = rotate3_y(color, that.slider_y.value / that.slider_rad);
+      color = rotate3_z(color, that.slider_z.value / that.slider_rad);
+      
+      rotated_colors[key] = color;
+    }
+    
+    
+    // arrary version
+    
+    /*
+    this.clamp = this.max_clamp(rotated_colors);
+    
+    for (let i=0; i < rotated_colors.length; i++) {
+      if (this.clamp_rule == "global") {
+        const clamped = rotated_colors[i].map(x => x / this.clamp);
+        this.update_css(`--c${i}`, clamped);
+      }
+      else if (this.clamp_rule == "individual") {
+        let clamped = clamp_rgb(color);
+        this.update_css(`--c${i}`, clamped);
+      }
+      else { // no clamping -- let rgb just take values out of its range
+        this.update_css(`--c${i}`, rotated_colors[i]);
+      }
+    }
+    
+    */
+    
+    // dict version
+    
+    this.clamp = this.max_clamp(rotated_colors);
+    
+    for (const key in rotated_colors) {
+      if (this.clamp_rule == "global") {
+        const clamped = rotated_colors[key].map(x => x / this.clamp);
+        this.update_css(key, clamped);
+      }
+      else if (this.clamp_rule == "individual") {
+        let clamped = clamp_rgb(color);
+        this.update_css(key, clamped);
+      }
+      else { // no clamping -- let rgb just take values out of its range
+        this.update_css(key, rotated_colors[key]);
+      }
+    }
+    
   }
   
   // add a color picker for each start color and their event listeners
   initColorPicker() {
     // for each baseColor, add an HTML color picker and init the value
     let that = this;
+    
+    // array version
     for (let i = 0; i < this.baseColors.length; i++) {
-      that.add_color_picker(i, this.baseColors[i]);
-      continue;
-      /*
-      let picker = document.createElement('input');
-      picker.type = 'color';
-      picker.className = 'color_picker';
-      picker.id = `c${i}`;
-      picker.value = rgbToHex(...that.baseColors[i].map(x => x + 127));
-
-      // Add the picker to the DOM
-      document.getElementsByClassName('colors')[0].appendChild(picker);
-
-      // Create a closure to capture the current value of i
-      (function(index) {
-        // Add an event listener to the picker
-        
-        //////////////////////////////////////////////////
-        // Color Picker event function
-        //
-        // When this color picker is given a new value...
-        picker.addEventListener('input', function() {
-          
-          // 1. Unrotate to get correct baseColor 
-          const unr = update_pick(picker.value, that.slider_rad);
-          that.baseColors[index] = unr;
-          
-          // 2. Change CSS variable value (update DOM)
-          that.update_css(index, picker.value);
-          
-        });
-        // End color picker event function
-        /////////////////////////////////////////////////
-      })(i);
-      */
+      //that.add_color_picker(i, this.baseColors[i]);
+      //this.add_color_picker(i, this.baseColors[i]);
     }
+    
+    // dict version
+    for (const key in this.baseColors) {
+      this.add_color_picker(key, this.baseColors[key]);
+      }
   }
   
   add_color_picker(index, color) {
-    console.log(index, color)
     const that = this;
     let picker = document.createElement('input');
     picker.type = 'color';
     picker.className = 'color_picker';
-    picker.id = `c${index}`;
+    
+    // array version
+    //picker.id = `c${index}`;
+    
+    // dict version
+    picker.id = index;
     picker.value = rgbToHex(...color.map(x => x + 127));
 
     // Add the picker to the DOM
@@ -250,55 +268,160 @@ class ColorRotator {
     document.getElementsByClassName('colors')[0].appendChild(picker);
 
     picker.addEventListener('input', function() {
+      
           
       // 1. Unrotate to get correct baseColor 
-      const unr = update_pick(picker.value, that.slider_rad);
+      const unr = update_pick(picker.value, that.slider_rad, that.clamp);
+      // unclamp it
+      
       that.baseColors[index] = unr;
           
-      // 2. Change CSS variable value (update DOM)
-      that.update_css(index, picker.value);
+      // 2. Change CSS variable value (update DOM) -- this happens in slide_update()
+      //that.update_css(`--c${index}`, color);
+      
+      that.slide_update();
           
       });
       // End color picker event function
       /////////////////////////////////////////////////
   }
   
-  update_css(index, color) {
+  update_css(name, color) {
   
-    color = hexToRgb(color);
-    color = clamp_rgb(color);
 		color = color.map(function(x) {return Math.round(x + 127)});
 			 
 		const rgb_str = 'rgb('.concat(String(color[0]), ',', String(color[1]), ',', String(color[2]), ')');
-			
-		const name = "--c" + String(index);
-			
+				
     r.style.setProperty(name, rgb_str);
-    // slide_update();
+        
+    // update picker value;
+    document.getElementById(name).value = rgbStringToHex(rgb_str);
+  }
+  
+  max_clamp(rgb_arr) {
+    let max_clamp = 1;
+    
+    // array version
+    /*
+    rgb_arr.forEach((rgb) => {
+      if (Math.max(...rgb) > 127 || Math.min(...rgb) < -127) {
+		    // get max error above or below the bounds
+		    const largest = Math.max(Math.max(...rgb), Math.abs(Math.min(...rgb)));
+		    const ratio = largest / 127;
+		    if (ratio > max_clamp) {
+		      max_clamp = ratio;
+		    }
+		  }
+    });
+    */
+    
+    // dict version
+    // TODO - change "rgb_arr" to "rgb_dict"
+    // TODO - remove all "// array version" code if no bugs for a while
+    for (const key in rgb_arr) {
+      const rgb = rgb_arr[key];
+      if (Math.max(...rgb) > 127 || Math.min(...rgb) < -127) {
+		    // get max error above or below the bounds
+		    const largest = Math.max(Math.max(...rgb), Math.abs(Math.min(...rgb)));
+		    const ratio = largest / 127;
+		    if (ratio > max_clamp) {
+		      max_clamp = ratio;
+		    }
+		  }
+    }
+    
+    
+    return max_clamp;
   }
   
 }
 
-const class_test = new ColorRotator(starting_colors)
+function getCssColors() {
 
-/////////////////////////////////////////////////////////////////////////////////
-// FUNCTIONS TO HANDLE COLOR PICKER UPDATES /////////////////////////////////////
-
-// hex needs to be turned into rgb,
-// then unrotated, because CSS var is a rotated version of reference color
-// we need to get the unrotated version to change the reference color
-// then turn it back into shifted rgb for the cartesian plot
-function update_pick(hex_color, slider_rad) {
-	let unr = hexToRgb(hex_color).map(x => x - 127);
-	unr = rotate3_x(unr, -slider_x.value / slider_rad);
-	unr = rotate3_y(unr, -slider_y.value / slider_rad);
-	unr = rotate3_z(unr, -slider_z.value / slider_rad);
-	//unr = unr.map(x => Math.round(x + 127));
-	return unr;
+  const styles = getComputedStyle(document.documentElement);
+  const arr = [];
+  
+  // Loop through computed styles and find CSS variables
+  Array.from(styles).forEach(property => {
+    if (property.startsWith('--c')) {
+      arr.push(property);
+    }
+  });
+  
+  return arr;
 }
 
-// FUNCTIONS TO HANDLE COLOR PICKER UPDATES /////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////
+function getCssStartColors(cssVars) {
+
+  const styles = getComputedStyle(document.documentElement);
+  const startColors = {};
+  
+  // Loop through computed styles and find CSS variables
+  cssVars.forEach(property => {
+    
+    const value = styles.getPropertyValue(property);
+      
+    // hex property
+    if (value[0] == "#" && value.length() == 7) {
+      let rgb = hexToRgb(value).map(x => x - 127);
+      startColors[property] = rgb;
+    }
+      
+    // color property
+    else if (value.slice(0, 3) == "rgb") {
+      let rgb = rgbStringToArr(value).map(x => x - 127);
+      startColors[property] = rgb
+    }
+
+  });
+  
+  return startColors;
+}
+
+const starting_colors = [ "--c0",
+						              "--c1",
+						              "--c2",
+						              "--c3",
+						              "--c4",
+						              "--c5" ];
+                                
+
+//const class_test = new ColorRotator(undefined, document.getElementById("bottom"))
+
+
+
+
+
+
+
+
+
+
+
+// hex needs to be turned into rgb,
+// then unrotated, because CSS var is a rotated + clamped version of reference color
+// we need to get the unrotated+unclamped version to change the reference color
+// then turn it back into shifted rgb for the cartesian plot
+function update_pick(hex_color, slider_rad, clamp) {
+  
+  // turn color picker HEX to RGB, and then shift
+  // coords into 'centered' rgb space - where 0,0,0 == rgb(127,127,127)
+	let base_color = hexToRgb(hex_color).map(x => x - 127);
+	
+	// undo the rotation and clamping so that when those
+	// effects are re-applied the unr value ends up back at hex_color
+	
+	// unclamp so that when rer
+	base_color = base_color.map(x => x * clamp);
+  
+  // 'unrotations' must be done in reverse order that slide_update rotates
+	base_color = rotate3_z(base_color, -slider_z.value / slider_rad);
+	base_color = rotate3_y(base_color, -slider_y.value / slider_rad);
+	base_color = rotate3_x(base_color, -slider_x.value / slider_rad);
+
+	
+	return base_color;
+}
 
 
 // A function for getting a css root variable value
@@ -314,6 +437,16 @@ function rgbToHex(r, g, b) {
   const hexG = g.toString(16).padStart(2, '0');
   const hexB = b.toString(16).padStart(2, '0');
   return `#${hexR}${hexG}${hexB}`;
+}
+
+function rgbStringToArr(str) {
+  const a = str.split(",");
+	const arr = [a[0].slice(4),
+				 a[1],
+				 a[2].slice(0, -1)];
+				
+	const input = arr.map(x => parseInt(x));
+	return input;
 }
 
 function rgbStringToHex(str) {
@@ -385,8 +518,8 @@ function get_rgb(str, color_space="rgb") {
 		    }
 		    break;
 		    
-        case "prophoto-rgb":
-        	cleaned  = color.slice(19, -1);
+      case "prophoto-rgb":
+        cleaned  = color.slice(19, -1);
 	    	spaceless = cleaned.replaceAll(' ','');
 		    split    = spaceless.split('%');
 	    	intArr   = []
@@ -405,7 +538,7 @@ function set_rgb(name, value, color_space="rgb") {
 	switch(color_space) {
 		case "rgb":
 			// translate back into positive space and return to integer
-			value = clamp_rgb(value);
+			//value = clamp_rgb(value);
 			value = value.map(function(x) {return Math.round(x + 127)});
 			
 			//
@@ -448,27 +581,27 @@ function set_rgb(name, value, color_space="rgb") {
 */
 
 function rotate3_x(triple, ang) {
-    x = triple[0]
-    y = triple[1]
-    z = triple[2]
+    const x = triple[0]
+    const y = triple[1]
+    const z = triple[2]
     return [x,
             y*Math.cos(ang) - z*Math.sin(ang),
             y*Math.sin(ang) + z*Math.cos(ang)]
 }
 
 function rotate3_y(triple, ang) {
-    x = triple[0]
-    y = triple[1]
-    z = triple[2]
+    const x = triple[0]
+    const y = triple[1]
+    const z = triple[2]
     return [x*Math.cos(ang)   + z*Math.sin(ang),
             y,
             - x*Math.sin(ang) + z*Math.cos(ang)]
 }
 
 function rotate3_z(triple, ang) {
-    x = triple[0]
-    y = triple[1]
-    z = triple[2]
+    const x = triple[0]
+    const y = triple[1]
+    const z = triple[2]
     return [x*Math.cos(ang) - y*Math.sin(ang),
             x*Math.sin(ang) + y*Math.cos(ang),
             z]
@@ -483,23 +616,3 @@ function clamp_rgb(rgb) {
 	}
 	else { return rgb; }
 }
-
-function rotate_rgb(rgb, ang, axis, css_var, color_space="rgb") {
-
-    rgb = axis(rgb, ang);
-    
-    switch(color_space) {
-    	case "rgb":
-    		rgb = rgb.map(Math.round);
-    		set_rgb(css_var, rgb.map(function(x) {return x + 127}));
-    		break;
-    		
-    	case "prophoto-rgb":
-    		set_rgb(css_var, rgb.map(function(x) {return x + 50}), color_space);
-    		break;
-    }
-    
-    return rgb;
-}
-
-
