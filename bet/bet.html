@@ -1,0 +1,154 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="../style.css">
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+
+<script type="text/javascript"
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+<title>Why You Should BET on Your Blocks</title>
+</head>
+<body>
+<h1>Why You Should BET on Your Blocks</h1>
+<p>
+<h2> Motivation </h3>
+
+<p>
+The Saito Consensus Protocol is most often discussed in terms of block production as that is where its two primary innovations ameliorate fundamental issues. What is often black-boxed in conceptions is what happens after a block is produced. As an <i>open</i> consensus model, there is no block attestation and as a high bandwidth chain with a fundamentally novel consensus mechanism, that the basic incentives of Bitcoin adapt perfectly to Saito is not obvious.
+
+<p>
+In Bitcoin a successful miner propagates his block as quickly as possible to increase the chance that the view of consensus where he earns a mining reward is adopted - and unsuccessful miners adopt that view because it gives them a head-start to mine on the newest block rather than burning resources on old history. 
+
+<p>
+The question "what to do if I receive two blocks at once," is technically easy; given the way networks operate it is only possible for a client to receive one whole block before another - the block to adopt and propagate is thus always "the first one."
+
+<p>
+The same principle applies to Saito, but there are two relevant differences:
+
+<ol>
+<li>Saito blocks may contain far more data and are produced more quickly</li>
+<li>There is no energy expenditure required to produce a block</li>
+</ol>
+
+<p>
+The basic innovation of Bitcoin exists for a reason: different parts of the network need to come to consensus when they receive different data; the solution is to collectively adopt the longest chain over all others (and to add cost to creating it). In Bitcoin, where fork rate is low, and block verification is cheap, shifting one's view of consensus in this way is relatively easy.
+
+<p>
+But for a high-bandwidth blockchain where the whole point is to process large quantities of data, this process is by definition more expensive - after wasting time and resources building an orphaned fork, that same time and energy must be applied to catch up to the canonical chain. Though this may more often than not amount to revisions of short block length, the unconstrained block size of Saito still allows for these to be relatively costly ordeals.
+
+<p>
+Saito also lacks the same type of upfront security in Bitcoin when it comes to accepting block data. Since hashing is required to produce a valid block in Bitcoin, it is prohibitively expensive to present a valid <i>block header</i> before sending the block body unless that same cost leads to a block reward. This prevents attackers from greifing the network by forcing honest nodes to recieve and verify floods of junk data in order to find a legitimate block.
+
+<p>
+Saito Consensus already puts the responsibility of productive collaboration squarely on relay nodes, who are punished for working with those who inflate the value of their contribution to work given to them. It is already the case that mindlessly coordinating is less profitable in Saito than selecting for productivity in peers - so it is not too jarring to realize that block propagation dynamics rely similarly on careful collaboration from network nodes and that such care is in their best interest. While sound, this does limit who can participate in block propagation without first building some sort of positive reputation in the network. 
+
+<p>
+Given the costly but unavoidable prospect of forks, as well as the responsibility of nodes to scrutinize and react to each other's behavior, an incentive mechanism which makes identifying valid blocks and determining their chance at adoption on the main fork <i>easier</i> means less sunk costs network-wide, and a greater ability to relay legitimate blocks trustlessly.
+
+<h2>Existing Incentives</h2> 
+
+<p>
+Without introducing closure, Saito must rely on market incentives to encourage the network to propagate legitimate blocks and make determinations on which fork to adopt. Golden Ticket miners play a central role here, as the inclusion of Golden Tickets on a fork validates the block(s) before it and unlocks their rewards. This means block producers have a strong incentive to relay valid blocks to validate their claim on work before another block producer sharing that work does the same.
+
+<p>
+Transaction relayers for a block share this incentive, and offer a natural path for blocks to propagate. The block producer can select the transactions with the highest fees and relay blocks back down the routing paths its transactions came from, towards nodes with greater and greater claim on the fees of those transactions and thus likewise will rationally propagate that block to miners. This is dubbed the <i> reverse routing incentive. </i> 
+
+<p>
+Limited payout to miners incentivizes them to propagate their work as quickly as possible (hence the large fee), and the news of this solution to the network validates their fork choice to consensus. Golden Ticket miners who would otherwise 'tie' compete for inclusion by increasing the fees on their Golden Ticket transactions. The associated fee can settle disputes between two forks which recieved Golden Tickets around the same time - even if deep nodes cannot claim substantial reward from the fee, the high fee signals that one Golden Ticket and its associated fork is likely being preferred by nodes which can reap a significant reward.
+
+<p>
+This dynamic still requires waiting and hoping one's fork will recieve the more valuable Golden Ticket(s); the potential length of orphaned forks and the cost to revise them increases when, due to bad luck, valid Golden Tickets do not appear for multiple blocks. Miners also bear the responsibility of filtering honest block producers from attackers so they do not waste time verifying junk blocks from Sybils.
+
+<h2>Simple Solutions</h2>
+
+<h3>Feeless PoW</h3>
+
+<p>
+Golden Ticket Miners may reliably find block producers with incentives to send valid blocks by first sending a Saito transaction to the network and observing who signs it along its relay path; the final signature is very likely a block producer. If this was to be achieved in a completely open fashion, not first requiring tokens to bootstrap oneself as a miner, the miner could send a feeless transaction to the network with a proof-of-work attached to signal their desire and ability to mine blocks in aid of that relay path.
+
+<h3>Routing Work Merkle Branch</h3>
+
+<p>
+As far as other nodes go, an analogue to the work embedded in the compact hash of a Bitcoin block header exists in Saito: since work is embedded in transaction fees and shared through routing signatures, a node's investment in a block can be signalled through their claim on those fees without sending the full block.
+
+<p>
+For every transaction, or some subset with a sufficient claim on work to the block relayer, a Merkle Branch is created stemming from the full block hash. When a suspicious receiver of the block sees that the sender has signed a message containing those branches, which are each only slightly larger than the size of a single transaction, along with the Merkle Root, they can be sure that the sender has a financial interest in faithfully propagating a valid block and can then spend the resources accepting their data knowing that the sending node has incentive to cooperate.
+
+<p>
+While either of these schemes allow the network to remain trustleslly open to new participants, neither provide any greater forward indication of the correct fork choice. Ethereum's attestation and slashing works well, but introduces closure around the staking table. The purpose of this proposal is to introduce a mechanism which similarly rewards the block which ends up adopted, and punish blocks which are redundant at a certain depth.
+
+<h2> Naive Fork Choice Mechanism </h2>
+
+<p>
+Block production in Saito already carries rewards, the significant portion of which is implicit: routing work in a block somehow favors the (rational) node who produced it. Given the possibility that the same transactions which reward that block producer may be produced in a competing node at the expense of the first, these nodes have some incentive to <i>pay</i> the network to adopt their own. This can be achieved rather naively: if you produce a block, include in it a transaction with inputs created in that block and attach a competitive fee. Now nodes which relay that block also have a fee-paying transaction which is only valid <i>for that block.</i>
+
+<p>
+The nodes which the block is first relayed to then have some monetary incentive to switch to that block over one without such a reward, and even nodes that will not substantially benefit from the reward can use the size of the reward as a signal of the likelihood that the block is preferred over another received within a similar time-frame with a low reward, rather than waiting for miners to produce Golden Ticket which will take on average another full block to produce. Miners can also use this signal to select which fork to direct hashpower towards, which gives them information about block preference in addition to how early it was received. But there are incentive issues which allow free attacks on any nodes attempting accept this 'stake' trustlessly. 
+
+<!--
+Signatures, though can be forged to make a BET seem more legitimate, are not completely useless.
+
+For example, a block might be relayed in reverse according to routing paths in some transactions within it. Those nodes by definition have routing work and have more the further back the block is relayed towards the source of transactions. Those nodes do not need an incentive to propagate the block, and in fact might have a greater incentive than even the block producer to be sure the block is accepted.
+
+Those nodes can relay the block to miners with routing work Merkle Branches and relay to agnostic nodes with BETs. 
+-->
+
+<p>
+Nodes receiving blocks run the risk of adopting a block with poor chances of being widely accepted by being baited in by the fee the block producer attached - attackers may target certain nodes with such blocks while withholding it from the rest of the network in order to lead nodes down costly forks. Since the attackers know the block is unlikely to be accepted by the network, they can be reasonably sure that the attached fee remains unspent and have effectively griefed other nodes onto an orphaned fork for free. This should give pause to nodes using such incentives to change their view of consensus, which makes them largely pointless since they will revert back to adopting the first block no matter what fee reward is available. One way around this is a trust or reputation system between nodes sending such transactions - but perhaps a more <i>open</i> approach is possible.
+
+<h2> Block Enticement Transactions (BETs) </h2>
+
+<p>
+The concept of a <i>BET</i>, a <i>Block Enticement Transaction</i>, comes in to solve issues in the naive approach. Rather than using transaction inputs unique to the newly produced block, BETs are not invalidated if the block they reference is not eventually adopted by the network at large. All else being equal: for a network node deciding between two blocks at a single depth, where one has a naive enticement and the other has a BET, the obvious choice is the one with an included BET. Even if the block referred to by the BET does not end up adopted by the network, it will still pay that node, whereas the naive enticement is a sunk cost when the block it requires for validity is orphaned.
+
+<p>
+The logical question then is: 'if a BET always pays its reward, what is the incentive to adopt its referenced block over any other?' BETs contain rules which reduce their fee reward by half if they are included on a fork absent their referenced block. This reward could be distributed to miners and stakers, but given the fact that a failed BET will only pay routers half the fee, the issuer of the BET can easily re-use the same inputs while paying routing nodes anything greater than half the original fee and convince them to publish a transaction which supersedes the bet. Since the cost of this is exploit is half the BET fee, it is easier to simply incant the BET logic with the 50% refund automatically when the referenced block is not adopted.
+
+<h3>Improved Incentives</h3>
+
+<p>
+With the refund rules in place, it is clear that network nodes deciding between multiple BETs with equal rewards received at the same time have a clear incentive to adopt the block with the greatest BET. All other BETs must still pay half their fee, which prevents block producers from griefing network nodes without paying them, but the BET which nodes will least desire to halve in reward output is the one with the greatest fee.
+
+<p>
+Ameliorating the potential griefing attacks allows blocks to trustlessly make more informed assessments on blocks <i>upfront</i> just by information about their BETs, rather than blindly building on the first block and waiting and unwinding when incorrect. If multiple competing blocks recieved in narrow windows is commonplace, the most profitable strategy will likely be to spend some inverval of time listening for BETs before using those to decide on which block to verify and build atop.
+
+<p>
+Even when a BET's fee is reduced to the point of triviality for deep-hop nodes, it still serves as a relevant signal versus other blocks with their own BET fees; those with larger ones are more likely to have already been preferred by other nodes. If a <i>routing work Merkle Branch</i> is also included which proves that a transaction relayer path in that block is approximated in the current relay path of the BET, nodes can have strong assurance that those signatures represent genuine block adoption rather than being potentially meaningless signings by arbitrary nodes - instead the signatures are from nodes with existing incentives not to Sybil each other and to propagate that block containing their routing work.
+
+<p>
+BETs also serve as an additional cost commitment which puts friction on block greifing attacks. Even if the block relayer is malicious and seeks to waste others' resources, their inclusion of a significant enough BET to convince nodes to use those resources ensures the attack is costly and provides those nodes a chance at reward under any scenario. Rational block producers will not sqaunder the fee of a competitive block BET by sending invalid data. Even when a BET ceases to tangibly reward deep hop nodes, each relayer who can earn a reward has an interest in the block's adoption and thus its valid propagation.
+
+<h3>Reducing Fork Rate</h3>
+
+<p>
+The incentives serve more than to just compensate near nodes when they adopt a yet orphaned block or signal the likelihood of adoption to deeper nodes - they also reduce the incentive to produce redundant blocks at the same depth. A late block with a BET the same size as an earlier one is easily ignored yet costly to the producer, and any larger BET, while possibly convincing to the nearest neighbors, will not be enticing to deeper nodes who have more to gain from adopting on an already established fork.
+
+<p>
+This incentivizes block producers to be careful propagating blocks with enticing enough BETs for adoption when they suspect another block at that depth is already making rounds. Block producers who propagate a block at one depth with knowledge of an existing competitor must either significantly outpay its BET or outpace its routing to avoid spending the fee without achieving block adoption.
+
+<p>
+If a block publisher is aware that their block does not have the reward or timing required to include a competitive BET, the incentive to publish is reduced. This means, even before judging BETs and timings, the pre-conditions for network forks are reduced, as nodes are punished for producing redundant blocks with viable BETs at the same depth, knowingly or not. Less orphaned forks contributes to an overall increase in efficiency of the network and faster probablistic finality - fundamentally: higher cost to fork, better security.
+
+<p>
+Without introducing the requisite closure, BETs can achieve, in theory, some amount of single-block finality similar to PoS consensus but in an open and probalistic fashion. Rather than using the single heuristic of accepting the first block and accepting a certain rate of re-orgs after the fact as the cost of running a node, nodes can signal information indicating a block's chance at adoption which can be evaluated without even parsing the associated block - just a single transaction.
+
+<p>
+Coupled with the <i>dis-incentivization</i> to propagate or publish multiple blocks at a single depth, nodes end up with less uncertainty and more information to make profitable and converging decisions on fork-choice.
+
+<h2> Call to Action? </h2>
+
+<p>
+This proposal was originally conceived as a Saito Improvement Proposal, but given the realization that a BET can likely be constructed with basic scripting logic, the need to accommodate such a scheme by altering consensus is probably not necessary. This proposal is then for those running Saito Nodes in the future. The ask is not to include BETs alongside new blocks because it helps the network - obviously such motivations do not scale.
+
+<p>
+If this scheme holds any water at all, block producers will do it because it makes them more money. In theory, this should be true - rather than letting the network decide if your routing work or a competing publisher is to be adopted when blocks are produced simultaneously, the block producer which can profitably include a larger BET will both aid in consensus and better secure their rewards. So long as the idea is sound, all else it takes is for the transaction format to exist, be accessible, and be understood.
+
+<p>
+More on that as the Saito Network develops.
+
+</body>
+</html>

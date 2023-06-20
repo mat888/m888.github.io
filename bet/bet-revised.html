@@ -2,6 +2,14 @@
 <head>
 <link rel="stylesheet" type="text/css" href="../style.css">
 
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+
+<script type="text/javascript"
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
 <title>Why You Should BET on Your Blocks</title>
 </head>
 <body>
@@ -28,7 +36,7 @@ Due to the nature of decentralized networks and how blockchains settle disputes,
 In Ethereum, with fundamental compromises to openness, forks are, barring any issues, largely determined upfront; one does not wait for a longer chain to emerge, but for multiple blocks competing for adoption at a single depth (or 'slot') to collect attestations from stakers with slashing as a punishment for disrupting this process. Saito does have staking, but it may be more accurately referred to as <i>holder reflections</i> as the balances have no slashing condition - it is more of a secure sink for excess rewards.
 
 <p>
-<h2> Existing Incentives for Consensus Between Forks </h2>
+<h2> Existing Incentives for Fork Choice </h2>
 
 <p>
 So without introducing closure, Saito must rely on market incentives to help the network decide on which fork to adopt before seeing which ends up the longest; first one received is usually the best bet. But there are some reasons participants can and will desire to influence nodes onto a certain fork: the clearest is Golden Ticket rewards - these are miners' claims on block reward, and have limited payouts. No participants can earn rewards, and the chain is not valid unless these proof of work "Golden Tickets" are included. A fork containing more Golden Tickets will be strongly preferred.
@@ -39,7 +47,6 @@ Golden Ticket miners who would otherwise 'tie' compete for inclusion by increasi
 <p>
 This dynamic still requires waiting and hoping one's fork will recieve the more valuable Golden Ticket(s); the potential length of orphaned forks and the cost to revise them increases when, due to bad luck, valid Golden Tickets do not appear for multiple blocks. Miners also bear the cost of competing on behalf of forks - since their only determination of adoption rate is to mine the first block they recieve. This reduces network security as hashpower is split; this may be somewhat of a moot point in Saito, where sustained attack can never be profitable - but more security and faster block confirmation can't hurt.
 
-<p>
 <h2> Naive Solution </h2>   
 
 <p>
@@ -81,7 +88,6 @@ The incentives do more than just compensate near nodes when they adopt a yet orp
 <p>
 The incentives favor block producers who can spend more on the BET and still profit, which generally favors blocks with greater fees produced by more prolific nodes. If a block publisher is aware that their block does not have the reward or timing required to include a competitive BET, the incentive to publish is reduced. This means, even before judging BETs and timings, there should end up being inherently less network forks as nodes are punished for producing redundant blocks with viable BETs at the same depth, thus less orphaned forks, contributing to an overall reduction in resources required by the network. In general this makes the network more efficient and allows an open market to encourage convergence on new blocks, even before Golden Tickets are mined.
 
-<p>
 <h2> Call to Action? </h2>
 
 <p>
@@ -92,5 +98,130 @@ If this scheme holds any water at all, block producers will do it because it mak
 
 <p>
 More on that as the Saito Network develops.
+
+<h2>Math</h2>
+
+<p>
+The goal is to show how long a network node should optimally wait and listen for BETs under different conditions and determine mathematically:
+
+<ul>
+<li>under what scenarios the default strategy of immedietely building on the first block is more profitable</li>
+<li>when placing BETs on a block is profitable for the block producer</li>
+<li>the intersection of these conditions</li>
+</ul>
+
+<p>
+There are many variables at play:
+
+<ul>
+<li>The amount of routing work block producers stand to gain within their blocks</li>
+<li>The oppurtunity cost of waiting and listening for BETs before accepting blocks</li>
+</ul>
+
+<p>
+For simplicity's sake, only single block re-orgs will be considered at first, and a block is considered 'finalized' as soon as a Golden Ticket for it is produced. Golden Ticket miners have the largest oppurtunity cost by waiting to receive blocks since they cannot mine until they have a full block. Considering that their Golden Ticket also adds 'finality' (in this simplification) to that block, they have little incentive not to accept the first block and fully commit to mining it.
+
+<p>
+Network nodes looking to reduce re-org costs can trade-off responsiveness for assuredeness by only accepting blocks which have a Golden Ticket and letting block producers and miners work one or more blocks ahead of them, but this might be undesirable as it precludes them from being block producers themselves.
+
+<p>
+Let:
+<p>
+$c$ be the cost of receiving and validating a block
+
+<p>
+$b_r$ be the number of blocks re-orged
+
+<p>
+$b_t$ be the target blocktime
+
+<p>
+$t$ be the total transmission time for a block.
+
+<p>
+$BET$ be the fee tied to a block as described above.
+
+<hr>
+
+<h2>Refined Argument</h2>
+
+<h3>Without BETs</h3>
+
+<p>
+A network node who has fully recieved, verified, and began retransmitting a block has spent resources on that block and is therefore invested in it.
+
+<p>
+The requirement to repeat the process for another block at the same depth would delay their view of consensus and impart double the cost for block processing at that depth.
+
+<p>
+Together, a network node who has accepted a block has a resource investment $r$ and expectation of adoption as a probability, or probability range $p_a$.
+
+<p>
+Given that processing blocks takes resources, it is rational for nodes to delay processing a block while its expectation of adoption is too low.
+
+<p>
+There is also some cost to delaying the adoption of another block at the same depth when that other block ends up being accepted by the rest of the network. 
+
+<p>
+This investment and probability together determine the rational decision.
+
+<p>
+It is quite obvious that even if a network node spends a massive sum of money on processing a block, but the expectation of adoption for that block is zero, that the optimal choice then is to trash it and accept whatever other block is most likely to be adopted. Similarly, if another block at the same depth as one already processed has a 100% chance of adoption, the rational choice to ignore sunk costs.
+
+<p>
+Where it gets interesting are situations like the following: a network node has spent resources processing a block, and understands that block has a 40% chance of adoption and that only one other competing block, with 60% adoption odds, exists. By naively adopting the block with the greater odds, the node places themselves into a situation where they pay block processing costs <i>twice</i> 40% of the time. Whether or not this extra cost is rational depends upon the difference between the cost of block processing, and the cost of delaying acceptance of the cannonical fork.
+
+<p>
+The cost of block processing is fairly simple: it is the total compute required to receive and verify a block - the cost of delay is more complicated. It is obviously bad for network nodes to fall behind consensus: it lowers the quality of their service to users, burdens them with the same amount of work in less time, and if they cannot catch up at all, they will fall out of consensus completely. While obviously bad, costs must be quantified somehow.
+
+<p>
+In attempt to simplify such cost, only the computational costs associated with 'catching up' will be considered. <i>Compute density</i> is an apt term to quantify such costs - the compute density of a node which always accepts the cannonical fork is $1$, and the compute density of a node which must process blocks twice as fast in order to catch up is $2$; by further simplifying and assuming a linear cost relationship to compute desnity, the cost of delay can be more easily quantified.
+
+<p>
+Consider the toy example: Node $A$ accepts a block at depth $N_a$ and discovers a block at depth $N_b + 1$ exists and is somehow finalized. Given a block time of thirty seconds and knowledge of block $N_b$, $N_b + 1$ and their finalized status, <!-- this is a big assumption - in reality a node must process a block to determine if it should be preferred - what's to stop greifing attacks that can't be determined until a block is fully processed and time and resources are already wasted? Trust is the only answer so far unless BETs actually solve this --> the node previously building on $N_a$ must process blocks $N_b$ and $N_b + 1$ in thirty seconds where the node on the cannonical fork, Node $B$, could process just a single block in that timespan. This gives the <i>corrected</i> node (the node who must switch forks) a compute density of $2$ while the <i>corrective</i> node has a compute density of $1$.
+
+<p>
+In this toy example, the total cost of the situation on either node is the sum of the block processing cost weighted by the compute density required for each blocks produced. Each term of the sum is thus: <i>compute required</i> multiplied by <i>compute density</i>.
+
+<p>
+For Node $B$, who processed two blocks with compute density $\frac{dc}{dt} = d = 1$ and compute cost $c$, the total cost is:
+
+$$ cost(B_b) (1) + cost(B_b + 1) (1) = c + c = 2c$$
+
+While the cost for Node $A$, who produced one block at compute density $1$ and two blocks at compute density $2$ is:
+
+$$ cost(B_a) (1) + cost(B_b) (2) + cost(B_b + 1) (2) = c + 2c + 2c  = 5c$$
+
+Therefore the cost of delaying acceptance of the cannonical fork by a full block is $3c$.
+
+<p>
+----------<br>
+I'm not sure computational density is a good measure. A block has a fixed amount of computation and performing it fast or slow does not change that, and therefore should not effect the cost so directly as the above equations suggest. Furthermore, if there is ample time to re-org before the next block comes, the primary cost was computing over the orphaned block as even if computation density increased cost there may be time to process multiple blocks without increasing energy consumption as there is no need to increase block processing time.
+
+<p>
+In reality, the incentives of network nodes and block producers are directly related to miners - get miners the newest blocks the quickest, and you are more likely to be the first hop reward reciever on their Golden Ticket transaction. In this sense there exists an incentive for block hoarding from multiple parties:
+
+<ul>
+<li>Miners want to keep competition on mining low</li>
+<li>Nodes hoping to get Golden Ticket fee rewards will only want to send to miners</li>
+</ul>
+
+So network nodes rationally relay solely to miners, and miners do not rationally relay blocks to anyone. The participants with the greatest incentive to proliferate blocks are the block producers and transaction relayers who hold the routing work within a block. Since the tight network paths between relayers and block producers is implicitly established, it makes since that block producers would relay blocks backwards down transaction routing paths to all participants eligible for rewards. These participants then relay to miners in hopes to solidify that block. 
+
+<hr>
+
+<p>
+Flaws in argument:
+<p>
+"can use the size of the reward and the quantity of routing signatures on it as a signal of the likelihood that the block is preferred over another"
+<p>
+Part of this signal is easily exploitable by a node sybilling signatures - therefore it is only the size of the BET reward which can signal adoption of that block.
+
+<p>
+In practice, nodes cannot compare or even evaluate blocks before doing the work of processing them. This already implies a trusted relationship between nodes who relay blocks between one another, because sending large blocks of invalid data is costly greifing which can only be detected after the fact and can only be responded to by blacklisting that node.
+
+<p>
+This is one place where BETs are very useful - even if the block is invalid there is still a half reward for taking the BET. If an mistrusted node sends such a BET, the recieving node can still take their share of half the routing work without even looking at the block. Untrusted nodes can encourage others to receive their blocks with BETs so they can earn the potential full routing reward. 
+
 </body>
 </html>

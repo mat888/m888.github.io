@@ -1,0 +1,230 @@
+<!--
+
+Allow user to provide historical transactions (Merkle Branches from expired blocks' header hashes) and prove that they gave a complete record (in the context of an app).
+
+Require the addition of a valid record to  include a number which increments with each new record - to provide the full history, the user must provide however many valid Merkle Branches (in case of data from expired blocks) or just live tx's from current epoch that the current record count is at.
+
+Useful for systems where there may be some incentive to omit data, like a ranked game reputation tracking system where some user may want to revive their record but omit agreements they didn't fulfill. 
+
+P2SH comes in to dis-incentivize a user appending a record with the wrong number. The data could include a P2SH tx which is fulfilled if anyone can find a tx from that user (and for that app) in a valid block with a record number equal to or greater than the one being proposed. Either the bounty expires and goes back to the user's wallet after a certain amount of blocks or it is reaped by someone catching the fraud.
+
+The user can still post a record with no attached bounty which has an incorrect number, but various software collecting and interpreting records will consider records with no bounty as suspicious and may completely ignore them. Even still, a user may 'buy' the ability to post a 'valid' but incorrect record number by simply allowing the bounty to be reaped. But in this scenario, they lose an important proof: the expiring bounty transaction returning to their wallet.
+
+For every bounty which is not reaped (presumably because it was not fraudulent), a corresponding expiration transaction will eventually exist. By archiving the exp. tx alongside the original record tx, the user can prove that the record tx did not have any on chain records of equal or lower value when it was posted.
+
+<h2>
+
+When no on-chain records exist
+
+</h2>
+
+In the case where a user's records are existing solely on the expired blocks, then no matter what record number they add into the current epoch there will be no public data which may serve as a bounty - a Merkle Branch from an expired block can be verified as linked to the current epoch and thus used as a valid proof, but it should be assumed that expired block data is not public or accessible.
+
+This is a problem, because by posting a new record onto the chain when no previous records exist in the current epoch is indistinguishable from a user allowing all their records but the most recent to fall off the chain naturally. A user may allow their records to fall off-chain, and restart at a lower number, allowing them to omit the difference from their history.
+
+However, since each historical record has a number, the omissions will be clear via skipped record numbers.
+
+The only record number that can be added without reference to a previous is record 0. Past that, every record must reference the previous and that previous must be on chain
+
+In this case it is very difficult for a user to provide a historical record and prove to the public that it is complete. If the user had kept their latest valid record on-chain, then
+
+----
+
+Primary problem: Given a complete set of transactions as Merkle Branches (either currently on-chain or on a deleted block) specific to a user and/or an application, prove that there exist no other transactions belonging to that set - so verifiably prove that it is complete.
+
+First idea: Enforce that every transaction in a set has an index number starting at 0 and incrementing by one for each new addition. Now if a  tx with index # N is on-chain, one knows they need to see N historic transactions from that set in order to see every tx in that set.
+
+Secondary Problem: A fraudster can publish multiple transactions with the same index number, allowing them to choose which one to provide in their so-called 'complete' historic set.
+
+Idea for second problem: Consider transactions as valid members of the set only if they include a script that pays anyone who can provide another transaction previously published on-chain from that set with an equal to or greater than index number - so allow a 'bounty' to  be collected for posting a 'second child' or duplicate index number.
+
+The bounty expires after some amount of blocks and refunds the author of the tx.  This refund transaction is used as proof  that the corresponding tx in the set was not duplicitous - as if it was someone could have profited off of the bounty.
+
+Summary: So if a user has a tx in a set with an index number N on chain, but part of the full set has fallen off-chain, they can provide:
+
+1. N Merkle Branches of each tx
+2. N Merkle Branches of each refund tx
+
+Anyone with the header hash chain can verify that set of transactions did exist on chain, and if each comes with its refund tx, can reasonably infer that since the bounty was refunded that no one claimed it because there was in fact other transactions in that set with the same index number. This should prove that the set is complete; nothing is missing, based on the most recent tx's index number matching the number of txs provided.
+
+Bonus Problem: Prove that a set of transactions is complete even after the most recent addition to the set has fallen off chain. (This is where the question of proving ATR removed it comes in).
+
+Idea for that: Each transaction in the set  carries a small 'inheritance' output; this output is scripted such that it can only be spent to a valid child (one with an index number +1, correct identifier and the output requirements). 
+
+(Note that the bounty is still required, because the inheritance output can be fabricated i.e. create multiple tx in the set with index number K by funding inheritance from any outputs.)
+
+What the inheritance grants is the ability to look at a transaction in the set and know that it is the most recent by seeing its inheritance is unspent.
+
+If the most recent tx in the set has fallen off chain, and you can show that the inheritance output was fully spent as an ATR fee and not spent by passing it on to a child - then even though the tx is fully off chain the proof that its inheritance was not passed on shows it is the last tx in that set.
+
+-->
+<h1>
+Proving No Second Children Exist for Expired Block Data
+</h1>
+
+<p>
+For an app, specified by a hash ID, and any user within that app, every app transaction must be sequenced and numbered such that every transaction is a child of another (except the very first) and every transaction only has one child. If this is enforced, then even on a finite blockchain where only Merkle Roots are available for expired blocks, a user of an app with a transaction on-chain and every Merkle Branch for each previous transaction on the app can verifiably provide their full history such that anyone with access to the historic Merkle Roots can verify that user has not omitted any data.
+
+<p>
+Primarily, the no-second-child rule is enforced without smart contracts by every app transaction including a sequence number and a bounty; the bounty takes the form a P2SH output which will pay out the bounty to anyone who can provide a transaction from that app & user which has a sequence number equal to or greater than the one associated with the bounty. This bounty expires after some amount of blocks and refunds the user - by keeping a record of these bounty refunds and their associated app transactions, a user can show for each transaction that no fisherman was able to detect fraud in the form of a second-child.
+
+<p>
+When a user has a transaction with a sequence number N on-chain, they can verify the full history by providing N transactions and their bounty refunds as Merkle Branches or live transaction data. If the user is omitting any transactions, then they will only be able to provide some quantity of them less than N, and if at any point they attempted to fork by creating a second child, that second child will have had to include a bounty which anyone could reap and deny the user of the refund transaction associated to it - invalidating every transaction past that lineage.
+
+<p>
+Since transactions are allowed to fall off-chain, there is an edge case which makes the implementation so far indistinguishable from a replay-attack: a user allows all their transactions to fall off-chain and then adds a new one; since there are no parent transactions on-chain, the sequence number can be arbitrarily selected since the bounty will not be able to use any live-chain data to prove fraud (technically expired chain data can be verifiably used as proof, but access to expired data is not assumed). The situation in which a legitimate user allows all but one of their transactions to fall off-chain, and the one where a malicious one allows <i>all</i> their legitimate transactions to fall off-chain but then fabricates a new 'most recent' one, can not be told apart.
+
+<p>
+What is required is that every new on-chain child transactions must reference a parent. If the reference is omitted, or otherwise invalid, the bounty can be claimed by anyone. Since every new transaction must reference a live-chain parent, there is no situation where a parent can be 'forgotten' and a child can be fabricated. And since every transaction is under scrutiny both for:
+
+<ul>
+<li>Referencing a live parent.</li>
+<li>Not being a second child.</li>
+</ul>
+
+nodes do not need to have the full historical record to know whether or not a lineage retains the requirement of only one child per transaction; they simply need to check whether the most recent transaction had its bounty refunded to the user or reaped via fraud proof. No transaction can remain on-chain without being reaped unless both conditions are required; a replay of expired data or second-child are detectable and incentivized to be punished.
+
+<p>
+Fraud Proofs can be performed very efficiently by nodes set up to do so. They can use a nested dictionary, where the first dictionary are all transactions labelled with the app ID - within that, all transactions are indexed by user public key into arrays ordered by the sequence of transactions. Whenever a user submits a transaction to the app, the fisherman can access that user's most recent app transactions in a few operations and verify that their sequence number has not been reused. All of these operations can be pointers or other references towards the typical block database of a full node.
+
+<h2>
+Reviving fully off-chain Data
+</h2>
+<p>
+It may often be the case that a user holds their historical record locally, but it has completely fallen off the chain. In this case with the current limitations, they cannot verifiably revive the <i>entire</i> history. They can reveal all their app transactions and show the bounty refunds to prove the sequence is <i>at least</i> as long - but there is no proof that there aren't further transactions as part of that lineage. 
+
+<p>
+It is possible verifiably reveal 100 transactions but one cannot prove that 101 does not exist. This is why a live-parent (a parent currently on-chain) is required. Only with full archival block data can one prove that they are not omitting any further child transactions. 
+
+Or can they?
+
+<p>
+A 'dead' lineage is one where the most recent parent falls off-chain, meaning that the secondary requirement (reference to parent) cannot be fulfilled which opens to door to revise history by reviving an already used parent, which violates the primary requirement. But revivification may be achieved if the latest parent falling off chain is recorded and later presented. -- not, because any expired parent can be chosen.
+
+<!--
+Conditions Required:
+
+1. Show tx fell off due to ATR
+2. Show that when it did, it had no children
+
+Since a parent tx, like all txs, is static, it can never 'react' to show it has a child. A child tx may or may not exist, but the parent has no bearing or indication on if it does. This means that make a conclusion about a tx and whether it has a child is only possible if it has a child and that data is provided. To show that a tx has no child seems impossible. 
+
+!!
+
+Refund bounty on successful addition of new child. Or simply have new child use as an input to its bounty the refund of the parent. Now one can tell if a transaction has no children by if its refund is unspent.
+
+Issue with allowing refund to be claimed by transaction sender is that they may claim too quickly for a fisherman to reap the bounty on it. It could be the case that any child of a second-child could use as its fraud proof an ancestor, but the fisherman still has to have time to publish a fraud proof before the user - so at most a one block delay must be enforced on using a bounty refund for a new sequenced transaction's bounty input.
+
+As an aside: the implementation above should have, and is missing, the explicit ability to use fraudulent parents to claim bounties on their children. Though one could use the fact that a parent will likely have its refund transaction claimed as a bounty, use that data, as input to the bounty requirement of its child, a user may be producing fraudulent lineages faster than bounties may be claimed, so the ability to use ancestors older than direct parents handles any issues related to spam.
+
+Rather than using the refund as an indication of a child existing or not (since that removes the bounty reward for all but the latest transaction), a second, minuscule transaction output is included which can only be redeemed by a valid child transaction. 
+
+(Does this remove the need for bounties altogether? No, because you can't verify that minuscule amount came from valid lineage or arbitrary transaction.)
+
+Since only one transaction can claim this small output, and it must satisfy the requirements of being a valid child, all valid children will thus have redeemed this output from a valid parent. The bounty is still necessary to prove that the source of the minuscule amount is an only-child.
+
+-->
+
+<h2> Child-only Outputs </h2>
+
+<p>
+The question of whether or not a child transaction exists for a given parent can be answered with an additional requirement to the addition of a valid child transaction: a transaction output from the parent must serve as an input to that child, and that transaction output may only be unlocked to fund a valid child input.
+
+This means that no child of such a transaction may exist unless that small output is spent.
+
+Using this knowledge, even when all sequenced transactions fall off-chain, the most recent transaction can be identified as it is the only one that may have this "inheritence output" (minuscule tx output) unspent.
+
+If the inheritence output is eatan up by automatic transaction rebroadcasting, that is used as proof that the transaction has no children.
+
+
+
+
+
+
+
+
+<!-- V2 -->
+
+<!--
+
+Allow user to provide historical transactions (Merkle Branches from expired blocks' header hashes) and prove that they gave a complete record (in the context of an app).
+
+Require the addition of a valid record to  include a number which increments with each new record - to provide the full history, the user must provide however many valid Merkle Branches (in case of data from expired blocks) or just live tx's from current epoch that the current record count is at.
+
+Useful for systems where there may be some incentive to omit data, like a ranked game reputation tracking system where some user may want to revive their record but omit agreements they didn't fulfill. 
+
+P2SH comes in to dis-incentivize a user appending a record with the wrong number. The data could include a P2SH tx which is fulfilled if anyone can find a tx from that user (and for that app) in a valid block with a record number equal to or greater than the one being proposed. Either the bounty expires and goes back to the user's wallet after a certain amount of blocks or it is reaped by someone catching the fraud.
+
+The user can still post a record with no attached bounty which has an incorrect number, but various software collecting and interpreting records will consider records with no bounty as suspicious and may completely ignore them. Even still, a user may 'buy' the ability to post a 'valid' but incorrect record number by simply allowing the bounty to be reaped. But in this scenario, they lose an important proof: the expiring bounty transaction returning to their wallet.
+
+For every bounty which is not reaped (presumably because it was not fraudulent), a corresponding expiration transaction will eventually exist. By archiving the exp. tx alongside the original record tx, the user can prove that the record tx did not have any on chain records of equal or lower value when it was posted.
+
+<h2>
+
+When no on-chain records exist
+
+</h2>
+
+In the case where a user's records are existing solely on the expired blocks, then no matter what record number they add into the current epoch there will be no public data which may serve as a bounty - a Merkle Branch from an expired block can be verified as linked to the current epoch and thus used as a valid proof, but it should be assumed that expired block data is not public or accessible.
+
+This is a problem, because by posting a new record onto the chain when no previous records exist in the current epoch is indistinguishable from a user allowing all their records but the most recent to fall off the chain naturally. A user may allow their records to fall off-chain, and restart at a lower number, allowing them to omit the difference from their history.
+
+However, since each historical record has a number, the omissions will be clear via skipped record numbers.
+
+The only record number that can be added without reference to a previous is record 0. Past that, every record must reference the previous and that previous must be on chain
+
+In this case it is very difficult for a user to provide a historical record and prove to the public that it is complete. If the user had kept their latest valid record on-chain, then
+
+----
+
+Primary problem: Given a complete set of transactions as Merkle Branches (either currently on-chain or on a deleted block) specific to a user and/or an application, prove that there exist no other transactions belonging to that set - so verifiably prove that it is complete.
+
+First idea: Enforce that every transaction in a set has an index number starting at 0 and incrementing by one for each new addition. Now if a  tx with index # N is on-chain, one knows they need to see N historic transactions from that set in order to see every tx in that set.
+
+Secondary Problem: A fraudster can publish multiple transactions with the same index number, allowing them to choose which one to provide in their so-called 'complete' historic set.
+
+Idea for second problem: Consider transactions as valid members of the set only if they include a script that pays anyone who can provide another transaction previously published on-chain from that set with an equal to or greater than index number - so allow a 'bounty' to  be collected for posting a 'second child' or duplicate index number.
+
+The bounty expires after some amount of blocks and refunds the author of the tx.  This refund transaction is used as proof  that the corresponding tx in the set was not duplicitous - as if it was someone could have profited off of the bounty.
+
+Summary: So if a user has a tx in a set with an index number N on chain, but part of the full set has fallen off-chain, they can provide:
+
+1. N Merkle Branches of each tx
+2. N Merkle Branches of each refund tx
+
+Anyone with the header hash chain can verify that set of transactions did exist on chain, and if each comes with its refund tx, can reasonably infer that since the bounty was refunded that no one claimed it because there was in fact no other transactions in that set with the same index number. This should prove that the set is complete; nothing is missing, based on the most recent tx's index number matching the number of txs provided.
+
+Bonus Problem: Prove that a set of transactions is complete even after the most recent addition to the set has fallen off chain. (This is where the question of proving ATR removed it comes in).
+
+Idea for that: Each transaction in the set  carries a small 'inheritance' output; this output is scripted such that it can only be spent to a valid child (one with an index number +1, correct identifier and the output requirements). 
+
+(Note that the bounty is still required, because the inheritance output can be fabricated i.e. create multiple tx in the set with index number K by funding inheritance from any outputs.)
+
+What the inheritance grants is the ability to look at a transaction in the set and know that it is the most recent by seeing its inheritance is unspent.
+
+If the most recent tx in the set has fallen off chain, and you can show that the inheritance output was fully spent as an ATR fee and not spent by passing it on to a child - then even though the tx is fully off chain the proof that its inheritance was not passed on shows it is the last tx in that set.
+
+-->
+<h1>
+Proving No Second Children Exist for Expired Block Data
+</h1>
+
+<h2>Introduction</h2>
+
+<p>
+The Saito blockchain is finite, meaning that transaction data is allowed to be removed from chain when it can no longer pay the market rate for storage.
+
+This has great economic benefits as transactions no longer pay for 'forever-storage,' allowing transient use cases to pay affordable rates for universal broadcast.
+
+<p>
+While there is nothing stopping nodes from holding data forever, in the interest in maintaining the utility of historic data while keeping the low overhead afforded by transient data, the 'No Second Children' rules describes a scheme which allows some set of transactions to prove it is the complete record of that set without providing the full blockchain history back to the genesis of the set.
+
+<h2>Counting Game</h2>
+
+<p>
+For a sequence of data which may later need to prove completeness using some transactions which have been removed from the chain and can therefore no longer be audited using public data, every transaction in that sequence will be marked with a sequence number starting at zero and incrementing by one for every new addition.
+
+Given a transaction
+
+<h2>A Bounty For Brothers</h2>
+

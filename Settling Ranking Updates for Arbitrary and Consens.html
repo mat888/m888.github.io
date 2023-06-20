@@ -48,7 +48,7 @@ Trust Rating
 At the most fundamental level, a trust rating is an inverse score on the amount of disputes a player is involved in. Any player who consistently misreports their losses will quickly accrue a low trust rating and deter players with acceptable trust ratings from engaging in normal match commitments with them.
 
 <p>
-This need not necessarily exclude anyone from competing against an opponent with a higher trust - the pre-match commitment can include a parameter which modifies the respective loss in trust rating in case of a dispute such that the player with higher trust rating is subject to lose less than the lower trust; this can be done automatically based on an algorithm or be agreed upon by the players.
+This need not necessarily exclude anyone from competing against an opponent with a higher trust - the pre-match commitment can include a parameter which modifies the respective loss in trust rating in case of a dispute such that players with higher trust rating are subject to lose less than those with lower trust; this can be done automatically based on an algorithm or be agreed upon by the players.
 
 The amount of trust rating a player agrees to lose in the case of a dispute is the <i>trust rating stake</i> for that player for that match.
 
@@ -56,6 +56,8 @@ The amount of trust rating a player agrees to lose in the case of a dispute is t
 In addition to a custom trust rating stake, players may also agree on a custom <i>skill rating stake</i> which determines how skill rating will be effected in any outcome (including a dispute, if so desired).
 
 This has an added benefit of allowing low stakes matches to be played which decrease the negative externalities of a dispute and can be used as a second lever with the trust rating stake for savvy matchmakers to best protect themselves as well as better gauge their skill differentials to achieve fairer rating adjustments, decreasing the desire to dispute.
+
+<h2>Incentive For Honesty</h2>
 
 <p>
 The arithmetic of the chronic abuser of disputes is not in their favor:
@@ -65,7 +67,7 @@ A player could protect their rating by disputing a match, but they could not gai
 The glaring issue is the negative effect a dispute has on honest winners: not only does it deny them a victory, it also lowers their trust rating as a result - there is no way for an honest winner to punish a malicious reporter or protect them from handing over an unearned win without themselves taking some loss in trust rating.
 
 <p>
-The only recourse for players abused in this way it to avoid re-matching that opponent without more favorable commitment parameters related to trust rating; unfortunately, a player who targets another player is able to abuse them at least one time, but as soon as the abusive player attempts to dispute against a new honest player, they will find themselves with a lower trust rating than either honest player involved with them.
+The only recourse for players abused in this way it to avoid re-matching that opponent without more favorable commitment parameters related to trust rating; unfortunately, a player who targets another player is able to abuse them at least one time, but as soon as the abusive player attempts to dispute against a subsequent honest player, they will find themselves with a lower trust rating than either honest player involved with them.
 
 The malicious players must either cease their abuse of the system or continue being a nuisance and continually descend in trust rating while any honest player who suffered a dispute from them, but refused to play again, would only suffer a single dispute on record.
 
@@ -81,7 +83,7 @@ In this scenario, a large group of attackers can suffer a minor decline in their
 <p>
 The only viable solution to a social attack is a social adjustment: if it becomes clear that a competitor is being targeted and their trust rating suffers unjustly as a result, then honest third parties must <i>manually</i> adjust their perception of the victim's trust rating in defiance of the system.
 
-This social hard fork is likely the only simple solution to this inherent weakness - but considering healthy competition already relies on assumptions of fair play which are similarly exploitable, this attack doesn't increase faith required past a point where it wasn't already.
+This social hard fork is likely the only simple solution to this inherent weakness - but considering healthy competition already relies on assumptions of fair play which are similarly exploitable, this attack doesn't increase faith required too far past a point where it wasn't already.
 
 <h3>
 Developing Trust Rating
@@ -124,6 +126,18 @@ The owner of that account will have strong incentives to avoid disputes since th
 Players with this financial commitment should avoid equal deals on trust-stakes with accounts having not much to lose by carrying through on threats to add disputes to the token-staked account.
 
 This associated risk is exactly what allows them to match them with higher trust rating accounts, as both have something substantial to lose by participating in a dispute; money talks.
+
+<h2>Backbone for Trusted Third Parties</h2>
+
+For those that desire an authority to mediate disputes, the pre-match commitment can be cosigned by any third party service wishing to build a reputation as a faithful referee.
+
+Third parties may host servers, observe games, or perform any other function that users of the service deem worthy of determining the outcome of matches.
+
+It is likely that the common users of such a ranking scheme will desire the familiar and more immediately reliable paradigm of trusted third parties, and that this preference may continue indefinitely.
+
+The decentralized nature of the basic trust and skill rating is still a large boon to user freedom and sovereignty: their public profile is not locked to, controlled, or censorable any particular third party outside of any single match they cosign judgement to.
+
+Should any third party service lose their appeal, users can just as easily fall back on the fully trustless commitments or use any other third party service - their identity is their own.
 
 <h2>
 Supporting Skill and Trust Rating Infrastructure
@@ -170,7 +184,7 @@ Matches which do not generate large audience become especially reliant on instit
 
 Using a rating trust-rating system tallying and punishing disputes honest players can, on average, rise above those attempting to use disputes to lie about match outcomes. 
 
-Players who lack full faith in each other may then participate in a competitive ranking system which rewards honest behavior without a central intermediator based; this system has applications for P2P online, in person, or any competition in which players may agree beforehand to participate in.
+Players who lack full faith in each other may then participate in a competitive ranking system which rewards honest behavior without a central intermediator; this system has applications for P2P online, in person, or any competition in which players may agree beforehand to participate in.
 
 <p>
 As the system allows competition where no centrally funded venue is required, it has important ramifications for open-source, community based games which may not generate the revenue typically required for such systems but are valued by their participants; by deploying atop The Saito Blockchain, which efficiently rewards nodes for network traffic, nodes can compete for profit by providing access to the boons of faith minimization which blockchain provides.
