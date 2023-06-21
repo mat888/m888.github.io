@@ -205,26 +205,3 @@ What the inheritance grants is the ability to look at a transaction in the set a
 If the most recent tx in the set has fallen off chain, and you can show that the inheritance output was fully spent as an ATR fee and not spent by passing it on to a child - then even though the tx is fully off chain the proof that its inheritance was not passed on shows it is the last tx in that set.
 
 -->
-<h1>
-Proving No Second Children Exist for Expired Block Data
-</h1>
-
-<h2>Introduction</h2>
-
-<p>
-The Saito blockchain is finite, meaning that transaction data is allowed to be removed from chain when it can no longer pay the market rate for storage.
-
-This has great economic benefits as transactions no longer pay for 'forever-storage,' allowing transient use cases to pay affordable rates for universal broadcast.
-
-<p>
-While there is nothing stopping nodes from holding data forever, in the interest in maintaining the utility of historic data while keeping the low overhead afforded by transient data, the 'No Second Children' rules describes a scheme which allows some set of transactions to prove it is the complete record of that set without providing the full blockchain history back to the genesis of the set.
-
-<h2>Counting Game</h2>
-
-<p>
-For a sequence of data which may later need to prove completeness using some transactions which have been removed from the chain and can therefore no longer be audited using public data, every transaction in that sequence will be marked with a sequence number starting at zero and incrementing by one for every new addition.
-
-Given a transaction
-
-<h2>A Bounty For Brothers</h2>
-

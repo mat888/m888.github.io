@@ -1,0 +1,129 @@
+<h1>
+Proving A Set of Transactions is Complete on a Finite Blockchain
+</h1>
+
+<h2>Introduction</h2>
+
+<p>
+The Saito blockchain is finite, meaning that transaction data is allowed to be removed from chain when it can no longer pay the market rate for storage.
+
+This has great economic benefits as transactions no longer pay for 'forever-storage,' allowing transient use cases to pay affordable rates for universal broadcast.
+
+<p>
+In the interest in maintaining the utility of historic data while keeping the low overhead afforded by transient data, the 'No Second Children' scheme allows some set of transactions to prove it is the complete record of that set without providing the full blockchain history back to the genesis of the set.
+
+<h2>Merkle Trees</h2>
+<p>
+The most immediate issue with expiring data on blockchain is proving, without the full history, that the data existed on-chain at all; it is also the simplest issue here to solve. 
+
+As full blocks can be represented by their Merkle Tree of transaction hashes, the history of full blocks can be stored in compressed form as a chain of block header hashes which is linked to the live chain.
+
+Proving that a transaction existed is as simple as providing its Merkle Branch and a block header hash from the expired chain.
+
+<p>
+What Merkle Trees cannot provide, and the goal of the following scheme, is proof certain data <i>does not exist</i> in the chain's history.
+
+Proving certain data never existed on-chain is important for proving a record is complete; "You don't know what you don't know."
+
+Without such assurance, participants may claim to have provided a full history while instead cleverly ommitting data which goes against their interests. 
+
+<h2>Family Trees</h2>
+
+<h3>Inheritance Transactions</h3>
+
+<p>
+The genesis element is created with an output of tokens from any source: the inheritance.
+
+In order to append a valid child, the full inheritance from its parent must be fully accounted for in the children, otherwise the lineage is incomplete.
+
+<p>
+Membership in a simple sequence is defined as existing in the in a chain of whole inheritance spends (as opposed to fractionally spending the inheritance); since the full inheritance can only exist in one output at a time, the transaction containing it is always a unique child to the transaction which sent it.
+
+Since every element contains information on the size of the inheritance output going back to the genesis element, any child which is presented with an inheritance input less than its parent is the final element in the set which can prove it has no siblings.
+
+
+<p>
+Inheritance outputs allow one to verify every element in a record is an only-child without full block data even when the genesis element and all but the latest record have expired from the public chain.
+
+If only the final element of a sequence is on-chain, that fact can be proven by showing its inheritance is unspent, and a presented sequence must begin at a genesis element and eventually reach that transaction to be deemed complete.
+
+<p>
+
+If the inheritance output from the genesis element ever goes unaccounted for in the presented sequence, verifiers may deem the presented sequence as incomplete, but otherwise have proof that they are being shown every element in that set; since every child references its parent, any lineage back from the latest element to a genesis element is both unique and complete. Spoofers are not able to provide differing histories for a single transaction without breaking the simple inheritance rules.
+
+<h3>Allowing Multiple Children</h3>
+
+<p>
+The scheme is more versatile than only allowing single children - so long as the full inheritance is accounted for in multiple of a transaction's children, those siblings may exist and the completeness of the set may still be verified so long as the total inheritance for any parent is accounted for in the sum of the inheritance of all its children.
+
+<p>
+Extraneous lineages can be explicitly terminated by sending their inheritance to a transaction which such an intention, making verification that they have no children simpler; the core lineage may be continued through just a single sibling.
+
+This is useful for a few reaons:
+
+<ul>
+<li>Multiple additions to the same set may be added within the same block</li>
+<li>The inheritance output can be partially redeemed for fungible tokens</li>
+<li>A single branch of the lineage can be verified while only presenting the first parent of any branch, rather than the complete family</li>
+</ul>
+
+Family trees are prudent because they require very little complexity; no special scripting or second layer nodes need participate.
+
+Users must simply abide by the protocol and they may prove that every element in a set, which comes  before a publicly revealed element, is accounted for.
+
+<h2> Furhter Enchancements </h2>
+
+<h3> UTXO Expiration Proofs </h3>
+
+If an inheritance output can be proven to have been consumed by ATR and expired off-chain, then that inheritance is provably the latest element in the set.
+
+If all elements fall off-chain but the record holder can supply this proof, they can convince verifiers that the set is complete, whereas without this proof they cannot prove that they are not withholding some transactions which may have come after the latest one they present.
+
+<p>
+This removes the need for record holders wishing to prove their set is complete always maintain their latest element on-chain; they will instead be allowed to let data expire at their leisure and use the proof of expired ATR on their latest inheritance transaction to prove it has no children, and is therefore the most recent child.
+
+<h3> Induction Proofs </h3>
+
+By incorporating special scripting logic in the form of an <i>Induction Proof</i>, the latest child can be shown to be a member of the family defined by the genesis element <i>without</i> providing every intermediate element in the lineage - only the genesis element is required.
+
+<p>
+The genesis element must have a unique identifier, and its inheritance output may only be spent on a child transaction with the following script logic:
+
+<ol>
+<li>My inheritance input must be from a genesis element or have identical script logic to my own</li>
+<li>The identifier from my inheritance input must match my own</li>
+</ol>
+
+<p>
+Because every transaction the inheritance is spent on must abide by both rules (which is recursively enforced by the first rule) and the identifier is randomly generated via transaction index, the inheritance becomes impossible to double spend.
+
+One may try to form an arbitrary transaction with the same identifier and a fake inheritance, but that inheritance from the fake parent will not:
+
+<ul>
+<li>Come from a genesis element that hashes to the same identifier</li>
+<li>Contain identical script logic as its own parent</li>
+</ul>  
+
+If the fake parent was created out of thin air, its fake inheritance input cannot have identical scripting logic as a valid child because a valid child requires its inheritance come from a transaction with the proper identifier; the fake parent may have the correct identifier, but will not be able to hold the same constraints on the input to its fake inheritance.
+
+<p>
+A fake parent cannot be made.
+
+The only valid creation of a transaction in the sequence is to stem from the genesis element; any transaction which is a direct child of the genesis element can validly spend its inheritance on a well-formed child, and those children enjoy the same exclusive privilages. 
+
+<p>
+This allows an unspent inheritance and the genesis element (which may exist off-chain) to together prove 'ownership' of a virtual asset, and no longer requires the full family tree or sequence to verify such a claim.
+
+By fractionalizing the inheritance amount, 'shares' of the asset can be sent.
+
+This scheme already exists under the term 'Induction Proof.'
+
+<p>
+The scripting requirements are almost, but not quite met by Bitcoin's scripting capabilities; what is required are OPcodes which can introspect on transaction inputs in order to verify that inheritance inputs were spent under the correct rules.
+
+Since consensus itself validates these rules and rejects transactions which breach them, the mear existence of unspent inheritance outputs bound to an identifier verifies that lineage was never double spent.
+
+<p>
+This allows extremely compact token protocols as the instantiation of tokens, the genesis element, can be removed from the chain and the introspective validation will ensure that its identifier and additional logic is carried forward uniquely to its latest spends.
+
+Those wishing to validate a token's origin need simply the Merkle Branch for the genesis element, which can be compactly stored off-chain.
