@@ -113,8 +113,6 @@ const const_r_color4 = [30 , 30 , 30 ]
 */
 
 
-
-
 //const global_color_space = "prophoto-rgb"; // bunko (doesn't not work well with multiple gradients)
 const global_color_space = "rgb";
 
@@ -331,6 +329,25 @@ class ColorRotator {
   
 }
 
+
+
+/*
+const starting_colors = [ "--c0",
+						              "--c1",
+						              "--c2",
+						              "--c3",
+						              "--c4",
+						              "--c5" ];
+                                
+
+const class_test = new ColorRotator(undefined, document.getElementById("bottom"))
+*/
+
+
+
+
+
+
 function getCssColors() {
 
   const styles = getComputedStyle(document.documentElement);
@@ -357,7 +374,7 @@ function getCssStartColors(cssVars) {
     const value = styles.getPropertyValue(property);
       
     // hex property
-    if (value[0] == "#" && value.length() == 7) {
+    if (value[0] == "#" && value.length == 7) {
       let rgb = hexToRgb(value).map(x => x - 127);
       startColors[property] = rgb;
     }
@@ -372,24 +389,6 @@ function getCssStartColors(cssVars) {
   
   return startColors;
 }
-
-const starting_colors = [ "--c0",
-						              "--c1",
-						              "--c2",
-						              "--c3",
-						              "--c4",
-						              "--c5" ];
-                                
-
-//const class_test = new ColorRotator(undefined, document.getElementById("bottom"))
-
-
-
-
-
-
-
-
 
 
 

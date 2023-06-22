@@ -14,7 +14,7 @@ The Saito blockchain is finite, meaning that transaction data is allowed to be r
 This has great economic benefits as transactions no longer pay for 'forever-storage,' allowing transient use cases to pay affordable rates for universal broadcast.
 
 <p>
-In the interest in maintaining the utility of historic data while keeping the low overhead afforded by transient data, the 'No Second Children' scheme allows some set of transactions to prove it is the complete record of that set without providing the full blockchain history back to the genesis of the set.
+In the interest in maintaining the utility of historic data while keeping the low overhead afforded by transient data, a transaction inheritance scheme allows some set of transactions to prove it is the complete record of that set without providing the full blockchain history back to the genesis of the set.
 
 <h2>Merkle Trees</h2>
 <p>
@@ -131,3 +131,31 @@ Since consensus itself validates these rules and rejects transactions which brea
 This allows extremely compact token protocols as the instantiation of tokens, the genesis element, can be removed from the chain and the introspective validation will ensure that its identifier and additional logic is carried forward uniquely to its latest spends.
 
 Those wishing to validate a token's origin need simply the Merkle Branch for the genesis element, which can be compactly stored off-chain.
+
+<div class="bottom" id="bottom">
+
+<script type="text/javascript"
+  		src="../colorRotator/colorRotator.js">
+</script>
+
+<script type="text/javascript">
+/*
+Note: When the First Argument to ColorRotator is undefined,
+this script will automatically detect CSS variables
+with the name scheme "--c0, --c1, --c2... --cN"
+that have hex or rgb properties.
+
+Alternatively, provide css var names as first argument.
+
+First Argument in an array of the CSS color vars
+which will be modified (rotated) via the color menu.
+	If left undefined, it will automatically use CSS
+	vars with the name scheme "--c0, --c1, --c2... --cN"
+
+Second Argument is the div the color menu is placed in.
+	If left undefined, it will automatically target a div
+	with the id="colorMenu". 
+*/
+	const colors = ["--c0", "--c1"];
+	const rotateGroup = new ColorRotator(colors, document.getElementById("bottom"))
+</script>
