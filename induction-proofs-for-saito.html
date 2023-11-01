@@ -1,0 +1,138 @@
+<h1> The Case for Induction Proofs on Saito </h1>
+
+<p>
+Oct 31. 2023
+
+<p>
+Credit to <i>0xluminous</i> who first made me aware of and suggested the use of them for Saito.
+
+<h2> Introduction </h2>
+
+<p>
+Induction proofs solve an important problem for UTXO blockchains: how can the descendants, and the descendants alone, carry forward special information from a genesis transaction without requiring the full history of transactions to verify such uniqueness. In the simplest state, this need only be an identifier, but in more advanced states may include transaction logic (or the hash thereof).
+
+<p>
+This document hopes to show how:
+
+<ol>
+<li>Induction Proofs and Saito Consensus are complimentary.</li>
+<li>Induction Proofs are superior to an explicit NFT or Token transaction type.</li>
+<li>The simplest implementation is fit for Saito blockchain in its current state.</li>
+</ol>
+
+<h2> 1. Complimentary </h2>
+<p>
+Induction proofs are designed to enchance the functionality of UTXO based systems, while at the same time reducing the data burden of requiring every transaction in the proof to carry with it its full history; only the most recent UTXO is needed to verifiably append a new child.
+
+<p>
+Saito takes this concept to the next level: not only will Induction Proofs not require their full history to be spent, they will not require any history, with the exception of the most recent transaction in the lineage, to exist on-chain at all.
+
+<p>
+Since Saito is the only blockchain with a tenable consensus mechanism for removing data, it is the only blockchain which can actually remove all but the most recent transaction in a lineage while still preserving the integrity it.
+
+Saito is the slimmest possible platform for induction proofs and grants them a level of scalability not possible on the typical UTXO blockchain.
+
+<p>
+If it is important for participants in an induction proof to know of the nature of the genesis of that lineage, then pruned UTXOs can still be preserved as succinct Merkle Branches in block explorers, APIs, and applications.
+
+<h2> 2. Superior to "NFT" Transaction Type </h2>
+
+<p>
+Saito is quickly approaching a time where NFTs will have credible justification for development - while the manner in which NFTs are built can be upgraded over time, the initial standard will require preservation lest those early holders are to have the rug pulled from under them. This requires either the preservation of a defunct, early standard forever, or a migration to a new standard - both of which may be messy.
+
+<p>
+For this reason it is important to carefully consider how this standard is instantiated. Induction Proofs are suggested over a more explicit "NFT" transaction type because they are more general - with more use cases than simple NFTs.
+
+<p>
+Additionally, they are simple and atomic; they only rely on their inputs for consensus-level verification, like any standard UTXO transaction.
+
+<h2> 3. Simple Now, Upgradable Later</h2>
+
+<p>
+Scripting is a possible feature for Saito Consensus down the road, but the exact nature of it is still up for debate. Induction Proofs fit this roadmap because:
+
+<ul>
+<li>They do not require general purpose scripting.</li>
+<li>Any scripting added later can be easily dropped in to a basic Induction Proof Standard added now.</li>
+</ul>
+
+<h2> Quick Explainer </h2>
+
+<p>
+For a technical breakdown of Induction Proofs adapted for a BSV fork, see <a href="https://radiant4people.com/tech/radiant-system-design/">here.</a>
+
+<p>
+Aschewing finer details, a basic Induction Proof Scheme works as follows (and may be familiar to Colored Coins):
+
+<h3> Creating </h3>
+
+<p>
+A <i>lineage</i> is created via a <i>genesis transaction</i>. This genesis transaction has an <i>id</i> and a <i>body.</i> The body is any arbitrary information, like a human readable title, an image file, the hash of a file, etc. - it is not important for security the contents of the body, except in a future case where script constraints are included and must be adhered to by new outputs.
+
+<p>
+The <i>id</i> of the <i>genesis transaction</i> is a unique and randomly generated value. It serves as the identifier of the lineage and as such, should be impossible to recreate. These conditions may be achieved by using the hash of the transaction inputs as the <i>id</i>.
+
+<p>
+The genesis transaction output holds an arbitrary amount of tokens in it. The sending of these tokens then follows special rules as described below:
+
+<h3> Sending & Melting </h3>
+
+Once a genesis transaction exists, it can be spent like any other UTXO, provided it is validated against the additional rules that ensure certain information is immutable for as long as the lineage exists:
+
+<ol>
+<li>It must share <i>id</i> and <i>body</i> of any input of the Induction Proof Class.</li>
+<li>If/When applicable, it must enforce the script logic of an input in such a class.</li>
+</ol>
+
+Note that while it may be the case the a <i>genesis</i> transaction, an Induction Proof Spend transaction, and the yet mentioned <i>melt</i> transaction may all be of unique types - they may also be of a single, Induction Proof Type (IPT), whose behavior simply depends on contenxt.
+
+I.e.
+
+<ol> 
+<li>An IPT tx output with no IPT inputs is treated as a <i>genesis</i> tx.</li>
+<li>An IPT tx output with an IPT input must, by the sending rules, produce an output matching the id and body of the input. (Multiple IPT inputs, or non-matching id/body considered as a malformed IPT send) </li>
+<li>An IPT tx output which does not match its input(s) (malformed) breaks the IPT tx lineage chain and releases the Saito tokens back into normal circulation. </li>
+</ol>
+
+<h3> Immediate Use Cases </h3>
+<p>
+Tokens in general, including NFTs, appear trivially as the result of just the special transaction type defined above, with no additional scripting logic. By using the Saito tokens locked into the genesis transaction as 'shares,' the lineage can be split at any point into multiple children with fractional quantities of their parent.
+<p>
+If non-divisibility, (non-fungibility), is to be enforced, no special rules are required. Either social convention or application logic can define genesis transactions marked a certain as non-divisible. They become tarnished if their locked token quantity is split. Or, the genesis transaction can simply be funded with the smallest possible unit of Saito: a <i>Nolan</i> - such that it can't be split under consensus rules.
+
+<h3>The Argument So Far</h3>
+
+<p>
+Since one benefit of Induction Proofs now is their non-messy and ambivalent support for scripting in the future, one ought to be convinced, before adopting them, that they support a scripting or smart contract system which is more robust and elegant than one which may take its place later.
+<p>
+However, at the very least, Induction Proofs provide tokens, NFTs, and apperantly account emulation, in an elegant manner - even if they were to completely fail to integrate with future scripting, they are still a more general and more useful transaction type than an explicit NFT type; so if NFTs are insisted on, I believe there is enough argument already for Induction Proofs.
+
+<h3> Looking Ahead: Scripting Enchancement </h3>
+
+<p>
+This is where the aforementioned <a href="https://radiant4people.com/tech/radiant-system-design/">document</a> describing Induction Proofs in a BSV fork becomes more relevant. The document describes the system as Turing Complete (dependent on additional scripting not yet available in Saito), but does not offer practical examples of schemes more advanced than tokens, NFTs, and account emulation.
+
+<p>
+What can be logically peiced together about further scripting integration is the following:
+
+<p>
+A genesis transaction may contain scripting logic defining how it may be spent. Such scripting logic may generalize the rules defined above for the simple Induction Proof Type, which is a consideration for consensus complexity - though it also allows them to be replaced by the more general scripting via a hardfork if needed.
+
+<p>
+The script logic which defines how an output may be spent must be carried forward via the Induction Proof just as the <i>id</i> and <i>body</i> were - consensus rules must enforce it. This allows a consistent chain of transactions following certain rules to exist. Whether that can reach the same expressibility as EVM-style smart contracts does not seem to be yet proven in practice.
+
+<p>
+Importantly, however, the economic attack surface as far as forcing nodes to perform costly computations is well isolated because:
+
+<ol>
+<li>Simple Induction Proofs (without additional scripting) have a constant execution time - just check the output matches the IPT tx input.</li>
+<li>Additional scripting inside an Induction Proof does not change the nature of those scripts. So if certain scripting functions are deemed safe and added later, they should remain just as safe and predictable inside the Induction Proof.</li>
+</ol>
+
+<h3> Conclusion </h3>
+<p>
+While the most ambitious use-cases of Induction Proofs for UTXO blockchains remain somewhat speculative, the simplest possible instantiation of them more generally solves an immediate demand the Saito blockchain has (NFTs), provides other features (Tokens, Account Emulation) and is ammenable to upgrades.
+<p>
+With respect to the time and energy of the team, and the anticipation of the community for NFTs, I insist that this more general solution, providing no outstanding flaws in its functionality are pointed out, is worth pursuing over more specific NFT transaction types which may be easier to implement but may also introduce technical debt into consensus should further scripting be later added.
+<p>
+Induction Proofs are a lower level scheme appriopriate for Saito in its current phase of development. They are elegant, well-suited to work with ATR, and require very little more from block producers. At the very least, they deserve to be well understood before going with an alternative.

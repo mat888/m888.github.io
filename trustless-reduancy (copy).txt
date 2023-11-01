@@ -24,7 +24,7 @@ Nodes which fail to effectively network will be outcompete in general by those w
 
 Spoofed nodes are a pure cost for their peers and thus are naturally cut out; the network selects for distinct machines in any particular routing path and keeps a record of those involved via the routing signatures attached to valid transactions. Nodes in the market for redundancy services, specifically seeking nodes which are geographically distinct, can leverage the fact that posing one machine as multiple will encourage peers to stop co-signing transactions to, or in more extreme cases require the node spend their own money to consistently fabricate transactions which make them appear legitimate.
 
-Much like EigenLayer on Ethereum packs extra functionality and reward into the base Ethereum Consensus layer by augmenting stake and slashing conditions, a protocol atop Saito can leverage its Sybil Resistance to identify nodes who are likely independently managed and located. The basic premise is not much more complicated than that, but there are various implementation details for redundancy services to raise the cost of spoofing and thus increase their value in the market.
+Much like EigenLayer on Ethereum packs extra functionality and reward into the base Ethereum Consensus layer by augmenting stake and slashing conditions, a protocol atop Saito can leverage its Sybil Resistance to identify nodes who are likely independently managed and located. The basic premise is not much more complicated than that, but there are various implementation details for redundancy services to raise the cost of spoofing and thus increase their value in the market. 
 
 Stake Weighted Routing Proofs
 
